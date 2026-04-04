@@ -1,0 +1,32 @@
+meta {
+  name: Cadastrar Comerciante
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}comerciantes
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/12.4.0
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+      "nome": "Douglas Henrique",
+      "telefone": "(87) 99449-1234",
+      "descricao": "Produtor de Mel"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,23 @@
+meta {
+  name: Buscar Zona de Entrega Especifica
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{base_url}}zonas-entrega/603b4e86-f25d-4c64-a150-b07812ebe835
+  body: none
+  auth: bearer
+}
+
+headers {
+  User-Agent: insomnia/12.4.0
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+}

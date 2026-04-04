@@ -1,0 +1,32 @@
+meta {
+  name: Cadastrar Estoque
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base_url}}estoque-bancas
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/12.4.0
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+      "feiraComercianteId": "fa658d32-bf96-4bf9-a83c-29ddfa557939",
+      "itemId": "7e49e28c-19e9-49d2-b6a5-5e9943da159c",
+      "quantidade": 20
+  }
+}
+
+settings {
+  encodeUrl: true
+}

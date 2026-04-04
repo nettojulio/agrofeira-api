@@ -1,0 +1,23 @@
+meta {
+  name: Buscar Feiras
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}feiras
+  body: none
+  auth: bearer
+}
+
+headers {
+  User-Agent: insomnia/12.4.0
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+}

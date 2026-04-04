@@ -1,0 +1,41 @@
+meta {
+  name: Confirmar Rateio
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{base_url}}pedidos/1bd8bfd9-e093-4532-a64e-47222e7fb547/rateio
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/12.4.0
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+      "rateio": {
+          "id-do-item-pedido-1": [
+              {
+                  "estoqueBancaId": "id-do-estoque-banca-1",
+                  "quantidade": 1.5
+              },
+              {
+                  "estoqueBancaId": "id-do-estoque-banca-2",
+                  "quantidade": 0.5
+              }
+          ]
+      }
+  }
+}
+
+settings {
+  encodeUrl: true
+}

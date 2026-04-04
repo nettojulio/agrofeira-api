@@ -1,0 +1,23 @@
+meta {
+  name: Listar Totais por Feira
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}repasses/feira/d170b563-c7c4-44a9-84dc-13f6d4a5c1d9/totais
+  body: none
+  auth: bearer
+}
+
+headers {
+  User-Agent: insomnia/12.4.0
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,24 @@
+meta {
+  name: Buscar Pagamento por ID
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{base_url}}pagamentos/b08a963c-9f40-4d34-8544-1570e804c3ae
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/12.4.0
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+}

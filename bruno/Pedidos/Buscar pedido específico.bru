@@ -1,0 +1,23 @@
+meta {
+  name: Buscar pedido específico
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{base_url}}pedidos/1bd8bfd9-e093-4532-a64e-47222e7fb547
+  body: none
+  auth: bearer
+}
+
+headers {
+  User-Agent: insomnia/12.4.0
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+}

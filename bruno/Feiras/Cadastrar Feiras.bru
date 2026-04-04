@@ -1,0 +1,35 @@
+meta {
+  name: Cadastrar Feiras
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}feiras
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/12.4.0
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+      "feira": {
+          "dataHora": "2026-04-05T09:00:00",
+          "status": "AGENDADA"
+      },
+      "comercianteIds": ["f1bbacc8-de95-4a60-a888-8ac34acb4496", "6cf0680e-f3a6-43d6-8831-7f592ecc08e5"],
+      "itemIds": ["6a6413f7-8485-4d22-8b7b-811f03429000", "7e49e28c-19e9-49d2-b6a5-5e9943da159c"]
+  }
+}
+
+settings {
+  encodeUrl: true
+}

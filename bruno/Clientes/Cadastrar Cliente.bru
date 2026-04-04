@@ -1,0 +1,32 @@
+meta {
+  name: Cadastrar Cliente
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}clientes
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/12.4.0
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+      "nome": "Maria José Jacinto",
+      "telefone": "(87) 98888-1234",
+      "descricao": "Cliente frequente"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

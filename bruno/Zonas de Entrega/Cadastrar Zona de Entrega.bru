@@ -1,0 +1,32 @@
+meta {
+  name: Cadastrar Zona de Entrega
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}zonas-entrega
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/12.4.0
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+      "bairro": "Heliópolis",
+      "regiao": "Zona Norte",
+      "taxa": 6.00
+  }
+}
+
+settings {
+  encodeUrl: true
+}

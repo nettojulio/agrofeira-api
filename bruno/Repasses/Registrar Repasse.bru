@@ -1,0 +1,31 @@
+meta {
+  name: Registrar Repasse
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}repasses
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/12.4.0
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+      "feiraComercianteId": "14a84c6c-e40e-4d47-a306-6226f9e68d3d",
+      "taxaAssociacao": 1.20
+  }
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,28 @@
+meta {
+  name: Atualizar Status de Feira
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{base_url}}feiras/d170b563-c7c4-44a9-84dc-13f6d4a5c1d9/status
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/12.4.0
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  "EM_ANDAMENTO"
+}
+
+settings {
+  encodeUrl: true
+}

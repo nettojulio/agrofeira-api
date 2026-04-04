@@ -1,0 +1,23 @@
+meta {
+  name: Buscar Comerciante Especifico
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{base_url}}comerciantes/f1bbacc8-de95-4a60-a888-8ac34acb4496
+  body: none
+  auth: bearer
+}
+
+headers {
+  User-Agent: insomnia/12.4.0
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+}

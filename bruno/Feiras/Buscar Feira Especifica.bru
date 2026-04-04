@@ -1,0 +1,23 @@
+meta {
+  name: Buscar Feira Especifica
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{base_url}}feiras/d170b563-c7c4-44a9-84dc-13f6d4a5c1d9
+  body: none
+  auth: bearer
+}
+
+headers {
+  User-Agent: insomnia/12.4.0
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+}

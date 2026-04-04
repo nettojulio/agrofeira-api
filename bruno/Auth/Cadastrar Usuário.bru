@@ -1,0 +1,27 @@
+meta {
+  name: Cadastrar Usuário
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base_url}}auth/register
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/12.4.0
+}
+
+body:json {
+  {
+      "username": "admin",
+      "password": "admin123"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

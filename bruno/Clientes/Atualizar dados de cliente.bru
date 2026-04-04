@@ -1,0 +1,32 @@
+meta {
+  name: Atualizar dados de cliente
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{base_url}}clientes/afa30505-d874-445f-b266-c92c48148e16
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/12.4.0
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+      "nome": "Maria José Jacinto Atualizado",
+      "telefone": "(87) 98888-5678",
+      "descricao": "Cliente frequente VIP"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

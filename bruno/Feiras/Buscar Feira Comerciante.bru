@@ -1,0 +1,23 @@
+meta {
+  name: Buscar Feira Comerciante
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{base_url}}feiras/d170b563-c7c4-44a9-84dc-13f6d4a5c1d9/comerciante/6cf0680e-f3a6-43d6-8831-7f592ecc08e5
+  body: none
+  auth: bearer
+}
+
+headers {
+  User-Agent: insomnia/12.4.0
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+}

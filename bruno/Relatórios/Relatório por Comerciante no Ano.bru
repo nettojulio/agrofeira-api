@@ -1,0 +1,23 @@
+meta {
+  name: Relatório por Comerciante no Ano
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{base_url}}relatorios/por-comerciante?ano=2026
+  body: none
+  auth: bearer
+}
+
+headers {
+  User-Agent: insomnia/12.4.0
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+}

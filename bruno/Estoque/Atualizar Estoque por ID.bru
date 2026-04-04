@@ -1,0 +1,30 @@
+meta {
+  name: Atualizar Estoque por ID
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{base_url}}estoque-bancas/9e824978-3f82-4bf2-8cb8-bbfd3880f3df
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/12.4.0
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+      "quantidade": 50
+  }
+}
+
+settings {
+  encodeUrl: true
+}

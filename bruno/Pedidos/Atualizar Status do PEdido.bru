@@ -1,0 +1,28 @@
+meta {
+  name: Atualizar Status do PEdido
+  type: http
+  seq: 6
+}
+
+patch {
+  url: {{base_url}}pedidos/1bd8bfd9-e093-4532-a64e-47222e7fb547/status
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/12.4.0
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  "CONFIRMADO"
+}
+
+settings {
+  encodeUrl: true
+}

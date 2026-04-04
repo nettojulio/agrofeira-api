@@ -1,0 +1,23 @@
+meta {
+  name: Buscar Cliente especifico
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{base_url}}clientes/afa30505-d874-445f-b266-c92c48148e16
+  body: none
+  auth: bearer
+}
+
+headers {
+  User-Agent: insomnia/12.4.0
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+}

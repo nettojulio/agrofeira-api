@@ -1,0 +1,23 @@
+meta {
+  name: Buscar todos os Comerciantes
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}comerciantes
+  body: none
+  auth: bearer
+}
+
+headers {
+  User-Agent: insomnia/12.4.0
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,32 @@
+meta {
+  name: Cadastrar Itens
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base_url}}itens
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/12.4.0
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+      "nome": "Melancia",
+      "unidadeMedida": "unidade",
+      "precoBase": 5.00
+  }
+}
+
+settings {
+  encodeUrl: true
+}

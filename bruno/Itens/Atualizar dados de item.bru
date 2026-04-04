@@ -1,0 +1,32 @@
+meta {
+  name: Atualizar dados de item
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{base_url}}itens/7e49e28c-19e9-49d2-b6a5-5e9943da159c
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/12.4.0
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+      "nome": "Banana Prata",
+      "unidadeMedida": "dúzia",
+      "precoBase": 6.00
+  }
+}
+
+settings {
+  encodeUrl: true
+}

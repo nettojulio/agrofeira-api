@@ -1,0 +1,23 @@
+meta {
+  name: Buscar Item específico
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{base_url}}itens/7e49e28c-19e9-49d2-b6a5-5e9943da159c
+  body: none
+  auth: bearer
+}
+
+headers {
+  User-Agent: insomnia/12.4.0
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,32 @@
+meta {
+  name: Registrar Pagamento
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base_url}}pagamentos
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/12.4.0
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+      "pedidoId": "1bd8bfd9-e093-4532-a64e-47222e7fb547",
+      "metodo": "PIX",
+      "valor": 17.00
+  }
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,32 @@
+meta {
+  name: Atualizar Zona de Entrega Especifica
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{base_url}}zonas-entrega/603b4e86-f25d-4c64-a150-b07812ebe835
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/12.4.0
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+      "bairro": "Heliópolis",
+      "regiao": "Zona Norte",
+      "taxa": 8.00
+  }
+}
+
+settings {
+  encodeUrl: true
+}

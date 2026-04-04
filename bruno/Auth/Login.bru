@@ -1,0 +1,27 @@
+meta {
+  name: Login
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}auth/login
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/12.4.0
+}
+
+body:json {
+  {
+      "username": "admin",
+      "password": "admin123"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

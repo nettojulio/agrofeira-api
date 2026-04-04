@@ -1,0 +1,28 @@
+meta {
+  name: Atualizar Itens do comerciante
+  type: http
+  seq: 6
+}
+
+put {
+  url: {{base_url}}comerciantes/f1bbacc8-de95-4a60-a888-8ac34acb4496/itens
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/12.4.0
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  ["id-do-item-1", "id-do-item-2"]
+}
+
+settings {
+  encodeUrl: true
+}

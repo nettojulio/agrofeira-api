@@ -1,0 +1,44 @@
+meta {
+  name: Cadastrar Pedidos
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}pedidos
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/12.4.0
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+      "feiraId": "d170b563-c7c4-44a9-84dc-13f6d4a5c1d9",
+      "clienteId": "afa30505-d874-445f-b266-c92c48148e16",
+      "comercianteVendedorId": "f1bbacc8-de95-4a60-a888-8ac34acb4496",
+      "tipoRetirada": "LOCAL",
+      "taxaEntrega": 0.00,
+      "itens": [
+          {
+              "itemId": "7e49e28c-19e9-49d2-b6a5-5e9943da159c",
+              "quantidade": 2
+          },
+          {
+              "itemId": "6a6413f7-8485-4d22-8b7b-811f03429000",
+              "quantidade": 1
+          }
+      ]
+  }
+}
+
+settings {
+  encodeUrl: true
+}

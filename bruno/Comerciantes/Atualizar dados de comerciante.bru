@@ -1,0 +1,32 @@
+meta {
+  name: Atualizar dados de comerciante
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{base_url}}comerciantes/f1bbacc8-de95-4a60-a888-8ac34acb4496
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/12.4.0
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+      "nome": "João da Silva Atualizado",
+      "telefone": "(87) 99999-5678",
+      "descricao": "Produtor de frutas, verduras e mel"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

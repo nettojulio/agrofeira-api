@@ -1,0 +1,41 @@
+meta {
+  name: Confirmar Disponibilidade de Rateio
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{base_url}}pedidos/1bd8bfd9-e093-4532-a64e-47222e7fb547/rateio
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/12.4.0
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+      "rateio": {
+          "755b6f8a-28a5-44b3-b9a8-cb02aa5fd6c7": [
+              {
+                  "estoqueBancaId": "d1d26cee-2bf1-4a65-a034-5ea52d1cb30a",
+                  "quantidade": 1
+              },
+              {
+                  "estoqueBancaId": "9e824978-3f82-4bf2-8cb8-bbfd3880f3df",
+                  "quantidade": 1
+              }
+          ]
+      }
+  }
+}
+
+settings {
+  encodeUrl: true
+}
