@@ -27,39 +27,39 @@ jobs:
           --health-retries 5
 
     steps:
-    - name: Checkout do código
-      uses: actions/checkout@v4
+      - name: Checkout do código
+        uses: actions/checkout@v6
 
-    - name: ☕ Configurar o Java 24
-      uses: actions/setup-java@v4
-      with:
-        java-version: '24'
-        distribution: 'temurin'
-        cache: 'maven' 
+      - name: ☕ Configurar o Java 24
+        uses: actions/setup-java@v5
+        with:
+          java-version: '24'
+          distribution: 'temurin'
+          cache: 'maven'
 
-    - name: Garantir permissão de execução do Maven Wrapper
-      run: chmod +x mvnw
+      - name: Garantir permissão de execução do Maven Wrapper
+        run: chmod +x mvnw
 
-    - name: Validar, Compilar e Testar (Unitários e Integração)
-      run: ./mvnw clean verify
-      env:
-        SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/agrofeira_test
-        SPRING_DATASOURCE_USERNAME: agro_user
-        SPRING_DATASOURCE_PASSWORD: agro_password
-        SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      - name: Validar, Compilar e Testar (Unitários e Integração)
+        run: ./mvnw clean verify
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/agrofeira_test
+          SPRING_DATASOURCE_USERNAME: agro_user
+          SPRING_DATASOURCE_PASSWORD: agro_password
+          SPRING_JPA_HIBERNATE_DDL_AUTO: update
 
-    - name: Upload de relatórios de erro (testes falharam)
-      if: failure()
-      uses: actions/upload-artifact@v4
-      with:
-        name: relatorios-testes-surefire
-        path: target/surefire-reports/
-        retention-days: 5
+      - name: Upload de relatórios de erro (testes falharam)
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: relatorios-testes-surefire
+          path: target/surefire-reports/
+          retention-days: 5
 
-    - name: Upload do Relatório de Cobertura (JaCoCo)
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: jacoco-coverage-report
-        path: target/site/jacoco/
-        retention-days: 14
+      - name: Upload do Relatório de Cobertura (JaCoCo)
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: jacoco-coverage-report
+          path: target/site/jacoco/
+          retention-days: 14
