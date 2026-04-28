@@ -1,33 +1,71 @@
 package br.edu.ufape.agrofeira.service
 
-import br.edu.ufape.agrofeira.domain.entity.Cliente
-import br.edu.ufape.agrofeira.domain.repository.ClienteRepository
+import br.edu.ufape.agrofeira.domain.entity.Usuario
+import br.edu.ufape.agrofeira.dto.request.ClienteRequest
+import br.edu.ufape.agrofeira.dto.request.ClienteUpdateRequest
+import br.edu.ufape.agrofeira.exception.ResourceNotFoundException
+import br.edu.ufape.agrofeira.repository.UsuarioRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
+import java.util.UUID
 
 @Service
 class ClienteService(
-    private val clienteRepository: ClienteRepository,
+    private val usuarioService: UsuarioService,
+    private val usuarioRepository: UsuarioRepository,
 ) {
-    fun listarTodos(): List<Cliente> = clienteRepository.findAll()
+    fun listar(pageable: Pageable): Page<Usuario> = usuarioRepository.findByPerfilNome("CONSUMIDOR", pageable)
 
-    fun buscarPorId(id: String): Cliente = clienteRepository.findById(id).orElseThrow { RuntimeException("Cliente não encontrado") }
+    fun buscarPorId(id: UUID): Usuario {
+        val usuario =
+            usuarioRepository
+                .findById(id)
+                .orElseThrow { ResourceNotFoundException("Cliente", id.toString()) }
+        if (usuario.perfis.none { it.nome == "CONSUMIDOR" }) {
+            throw ResourceNotFoundException("Cliente", id.toString())
+        }
+        return usuario
+    }
 
     @Transactional
-    fun criar(cliente: Cliente): Cliente = clienteRepository.save(cliente)
+    fun criar(request: ClienteRequest): Usuario {
+        val novoUsuario =
+            Usuario(
+                nome = request.nome,
+                email = request.email,
+                telefone = request.telefone,
+                senhaHash = request.senha,
+                descricao = request.descricao,
+            )
+        return usuarioService.cadastrar(novoUsuario, setOf("CONSUMIDOR"))
+    }
 
     @Transactional
     fun atualizar(
-        id: String,
-        cliente: Cliente,
-    ): Cliente {
-        val existente = buscarPorId(id)
-        return clienteRepository.save(
-            existente.copy(
-                nome = cliente.nome,
-                telefone = cliente.telefone,
-                descricao = cliente.descricao,
-            ),
-        )
+        id: UUID,
+        request: ClienteUpdateRequest,
+    ): Usuario {
+        val usuario = buscarPorId(id)
+
+        usuario.atualizadoEm = LocalDateTime.now()
+
+        val usuarioAtualizado =
+            usuario.copy(
+                nome = request.nome,
+                email = request.email ?: usuario.email,
+                telefone = request.telefone ?: usuario.telefone,
+                descricao = request.descricao ?: usuario.descricao,
+            )
+        // O copy de data class preserva as listas não informadas, mas como JPA tem problemas com set, precisamos usar save
+        return usuarioRepository.save(usuarioAtualizado)
+    }
+
+    @Transactional
+    fun deletar(id: UUID) {
+        buscarPorId(id)
+        usuarioRepository.deletarLogicamente(id)
     }
 }

@@ -1,95 +1,59 @@
 package br.edu.ufape.agrofeira.service
 
-import br.edu.ufape.agrofeira.domain.repository.FeiraComercianteRepository
-import br.edu.ufape.agrofeira.domain.repository.FeiraRepository
-import br.edu.ufape.agrofeira.domain.repository.PedidoRepository
+import br.edu.ufape.agrofeira.domain.entity.Relatorio
+import br.edu.ufape.agrofeira.domain.enums.TipoRelatorio
+import br.edu.ufape.agrofeira.dto.request.RelatorioRequest
+import br.edu.ufape.agrofeira.exception.ResourceNotFoundException
+import br.edu.ufape.agrofeira.repository.RelatorioRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
-import java.math.BigDecimal
-
-data class RelatorioMesDTO(
-    val mes: Int,
-    val ano: Int,
-    val nomeMes: String,
-    val totalVendido: BigDecimal,
-    val totalPedidos: Int,
-)
-
-data class RelatorioComercianteDTO(
-    val comercianteId: String,
-    val comercianteNome: String,
-    val totalVendido: BigDecimal,
-)
+import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
+import java.util.*
 
 @Service
 class RelatorioService(
-    private val feiraRepository: FeiraRepository,
-    private val feiraComercianteRepository: FeiraComercianteRepository,
-    private val pedidoRepository: PedidoRepository,
+    private val repository: RelatorioRepository,
 ) {
-    private val meses =
-        listOf(
-            "Janeiro",
-            "Fevereiro",
-            "Março",
-            "Abril",
-            "Maio",
-            "Junho",
-            "Julho",
-            "Agosto",
-            "Setembro",
-            "Outubro",
-            "Novembro",
-            "Dezembro",
-        )
+    fun listar(pageable: Pageable): Page<Relatorio> = repository.findAll(pageable)
 
-    fun relatorioPorMes(ano: Int): List<RelatorioMesDTO> {
-        val feiras =
-            feiraRepository
-                .findAll()
-                .filter { it.dataHora.year == ano }
+    fun buscarPorId(id: UUID): Relatorio =
+        repository
+            .findById(id)
+            .orElseThrow { ResourceNotFoundException("Relatório", id.toString()) }
 
-        return (1..12).map { mes ->
-            val feirasMes = feiras.filter { it.dataHora.monthValue == mes }
-            val totalVendido =
-                feirasMes
-                    .flatMap {
-                        feiraComercianteRepository.findByFeiraId(it.id)
-                    }.sumOf { it.totalVendido }
-
-            val totalPedidos =
-                feirasMes.sumOf {
-                    pedidoRepository.findByFeiraId(it.id).size
-                }
-
-            RelatorioMesDTO(
-                mes = mes,
-                ano = ano,
-                nomeMes = meses[mes - 1],
-                totalVendido = totalVendido,
-                totalPedidos = totalPedidos,
+    @Transactional
+    fun criar(request: RelatorioRequest): Relatorio {
+        // Aqui poderia haver lógica para gerar o conteúdo real baseado no tipo
+        val relatorio =
+            Relatorio(
+                titulo = request.titulo,
+                tipo = request.tipo,
+                conteudo = request.conteudo ?: "Conteúdo gerado automaticamente em ${LocalDateTime.now()}",
             )
-        }
+        return repository.save(relatorio)
     }
 
-    fun relatorioPorComerciante(
-        ano: Int,
-        mes: Int?,
-    ): List<RelatorioComercianteDTO> {
-        val feiras =
-            feiraRepository.findAll().filter { feira ->
-                feira.dataHora.year == ano &&
-                    (mes == null || feira.dataHora.monthValue == mes)
-            }
+    @Transactional
+    fun atualizar(
+        id: UUID,
+        request: RelatorioRequest,
+    ): Relatorio {
+        val relatorio = buscarPorId(id)
+        val relatorioAtualizado =
+            relatorio.copy(
+                titulo = request.titulo,
+                tipo = request.tipo,
+                conteudo = request.conteudo ?: relatorio.conteudo,
+                atualizadoEm = LocalDateTime.now(),
+            )
+        return repository.save(relatorioAtualizado)
+    }
 
-        return feiras
-            .flatMap { feiraComercianteRepository.findByFeiraId(it.id) }
-            .groupBy { it.comerciante.id }
-            .map { (_, fcs) ->
-                RelatorioComercianteDTO(
-                    comercianteId = fcs.first().comerciante.id,
-                    comercianteNome = fcs.first().comerciante.nome,
-                    totalVendido = fcs.sumOf { it.totalVendido },
-                )
-            }.sortedByDescending { it.totalVendido }
+    @Transactional
+    fun deletar(id: UUID) {
+        val relatorio = buscarPorId(id)
+        repository.delete(relatorio)
     }
 }

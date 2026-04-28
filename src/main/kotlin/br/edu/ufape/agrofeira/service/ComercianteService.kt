@@ -1,48 +1,69 @@
 package br.edu.ufape.agrofeira.service
 
-import br.edu.ufape.agrofeira.domain.entity.Comerciante
-import br.edu.ufape.agrofeira.domain.repository.ComercianteRepository
-import br.edu.ufape.agrofeira.domain.repository.ItemRepository
+import br.edu.ufape.agrofeira.domain.entity.Usuario
+import br.edu.ufape.agrofeira.dto.request.ComercianteRequest
+import br.edu.ufape.agrofeira.dto.request.ComercianteUpdateRequest
+import br.edu.ufape.agrofeira.exception.ResourceNotFoundException
+import br.edu.ufape.agrofeira.repository.UsuarioRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
+import java.util.UUID
 
 @Service
 class ComercianteService(
-    private val comercianteRepository: ComercianteRepository,
-    private val itemRepository: ItemRepository,
+    private val usuarioService: UsuarioService,
+    private val usuarioRepository: UsuarioRepository,
 ) {
-    fun listarTodos(): List<Comerciante> = comercianteRepository.findAll()
+    fun listar(pageable: Pageable): Page<Usuario> = usuarioRepository.findByPerfilNome("COMERCIANTE", pageable)
 
-    fun buscarPorId(id: String): Comerciante =
-        comercianteRepository.findById(id).orElseThrow { RuntimeException("Comerciante não encontrado") }
-
-    @Transactional
-    fun criar(comerciante: Comerciante): Comerciante = comercianteRepository.save(comerciante)
-
-    @Transactional
-    fun atualizar(
-        id: String,
-        comerciante: Comerciante,
-    ): Comerciante {
-        val existente = buscarPorId(id)
-        return comercianteRepository.save(
-            existente.copy(
-                nome = comerciante.nome,
-                telefone = comerciante.telefone,
-                descricao = comerciante.descricao,
-            ),
-        )
+    fun buscarPorId(id: UUID): Usuario {
+        val usuario =
+            usuarioRepository
+                .findById(id)
+                .orElseThrow { ResourceNotFoundException("Comerciante", id.toString()) }
+        if (usuario.perfis.none { it.nome == "COMERCIANTE" }) {
+            throw ResourceNotFoundException("Comerciante", id.toString())
+        }
+        return usuario
     }
 
     @Transactional
-    fun atualizarItens(
-        id: String,
-        itemIds: List<String>,
-    ): Comerciante {
-        val comerciante = buscarPorId(id)
-        val itens = itemRepository.findAllById(itemIds)
-        return comercianteRepository.save(
-            comerciante.copy(itens = itens.toMutableList()),
-        )
+    fun criar(request: ComercianteRequest): Usuario {
+        val novoUsuario =
+            Usuario(
+                nome = request.nome,
+                email = request.email,
+                telefone = request.telefone,
+                senhaHash = request.senha,
+                descricao = request.descricao,
+            )
+        return usuarioService.cadastrar(novoUsuario, setOf("COMERCIANTE"))
+    }
+
+    @Transactional
+    fun atualizar(
+        id: UUID,
+        request: ComercianteUpdateRequest,
+    ): Usuario {
+        val usuario = buscarPorId(id)
+
+        val usuarioAtualizado =
+            usuario.copy(
+                nome = request.nome,
+                email = request.email ?: usuario.email,
+                telefone = request.telefone ?: usuario.telefone,
+                descricao = request.descricao ?: usuario.descricao,
+                atualizadoEm = LocalDateTime.now(),
+            )
+        return usuarioRepository.save(usuarioAtualizado)
+    }
+
+    @Transactional
+    fun deletar(id: UUID) {
+        buscarPorId(id)
+        usuarioRepository.deletarLogicamente(id)
     }
 }

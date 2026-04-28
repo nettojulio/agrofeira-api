@@ -1,72 +1,73 @@
 package br.edu.ufape.agrofeira.service
 
 import br.edu.ufape.agrofeira.domain.entity.Feira
-import br.edu.ufape.agrofeira.domain.entity.FeiraComercianteEntity
-import br.edu.ufape.agrofeira.domain.entity.FeiraItem
 import br.edu.ufape.agrofeira.domain.enums.StatusFeira
-import br.edu.ufape.agrofeira.domain.repository.ComercianteRepository
-import br.edu.ufape.agrofeira.domain.repository.FeiraComercianteRepository
-import br.edu.ufape.agrofeira.domain.repository.FeiraRepository
-import br.edu.ufape.agrofeira.domain.repository.ItemRepository
+import br.edu.ufape.agrofeira.dto.request.FeiraRequest
+import br.edu.ufape.agrofeira.exception.ResourceNotFoundException
+import br.edu.ufape.agrofeira.repository.FeiraRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.math.BigDecimal
+import java.time.LocalDateTime
+import java.util.*
 
 @Service
 class FeiraService(
-    private val feiraRepository: FeiraRepository,
-    private val feiraComercianteRepository: FeiraComercianteRepository,
-    private val comercianteRepository: ComercianteRepository,
-    private val itemRepository: ItemRepository,
+    private val repository: FeiraRepository,
+    private val rateioService: RateioService,
 ) {
-    fun listarTodas(): List<Feira> = feiraRepository.findAllByOrderByDataHoraDesc()
+    fun listar(pageable: Pageable): Page<Feira> = repository.findAll(pageable)
 
-    fun buscarPorId(id: String): Feira = feiraRepository.findById(id).orElseThrow { RuntimeException("Feira não encontrada") }
+    fun buscarPorId(id: UUID): Feira =
+        repository
+            .findById(id)
+            .orElseThrow { ResourceNotFoundException("Feira", id.toString()) }
 
     @Transactional
-    fun criar(
-        feira: Feira,
-        comercianteIds: List<String>,
-        itemIds: List<String>,
-    ): Feira {
-        val feiraSalva = feiraRepository.save(feira)
-
-        comercianteIds.forEach { comercianteId ->
-            val comerciante =
-                comercianteRepository
-                    .findById(comercianteId)
-                    .orElseThrow { RuntimeException("Comerciante não encontrado") }
-            feiraComercianteRepository.save(
-                FeiraComercianteEntity(
-                    feira = feiraSalva,
-                    comerciante = comerciante,
-                    totalVendido = BigDecimal.ZERO,
-                ),
+    fun criar(request: FeiraRequest): Feira {
+        val feira =
+            Feira(
+                dataHora = request.dataHora,
+                status = request.status,
             )
-        }
+        return repository.save(feira)
+    }
 
-        itemIds.forEach { itemId ->
-            val item =
-                itemRepository
-                    .findById(itemId)
-                    .orElseThrow { RuntimeException("Item não encontrado") }
-            feiraSalva.itens.add(FeiraItem(feira = feiraSalva, item = item))
-        }
-
-        return feiraRepository.save(feiraSalva)
+    @Transactional
+    fun atualizar(
+        id: UUID,
+        request: FeiraRequest,
+    ): Feira {
+        val feira = buscarPorId(id)
+        val feiraAtualizada =
+            feira.copy(
+                dataHora = request.dataHora,
+                status = request.status,
+                atualizadoEm = LocalDateTime.now(),
+            )
+        return repository.save(feiraAtualizada)
     }
 
     @Transactional
     fun atualizarStatus(
-        id: String,
-        status: StatusFeira,
+        id: UUID,
+        novoStatus: StatusFeira,
     ): Feira {
         val feira = buscarPorId(id)
-        return feiraRepository.save(feira.copy(status = status))
+
+        // RF 0008: Executar o rateio automaticamente ao encerrar a feira para pedidos
+        if (novoStatus == StatusFeira.ENCERRADA && feira.status != StatusFeira.ENCERRADA) {
+            rateioService.executarRateioDaFeira(feira)
+        }
+
+        val feiraAtualizada = feira.copy(status = novoStatus)
+        return repository.save(feiraAtualizada)
     }
 
-    fun buscarFeiraComerciantePorFeiraEComerciante(
-        feiraId: String,
-        comercianteId: String,
-    ): FeiraComercianteEntity? = feiraComercianteRepository.findByFeiraIdAndComercianteId(feiraId, comercianteId)
+    @Transactional
+    fun deletar(id: UUID) {
+        val feira = buscarPorId(id)
+        repository.delete(feira)
+    }
 }

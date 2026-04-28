@@ -1,168 +1,104 @@
 package br.edu.ufape.agrofeira.service
 
-import br.edu.ufape.agrofeira.domain.entity.EstoqueBanca
 import br.edu.ufape.agrofeira.domain.entity.ItemPedido
 import br.edu.ufape.agrofeira.domain.entity.Pedido
-import br.edu.ufape.agrofeira.domain.entity.RateioItem
-import br.edu.ufape.agrofeira.domain.enums.StatusPedido
-import br.edu.ufape.agrofeira.domain.enums.TipoRetirada
-import br.edu.ufape.agrofeira.domain.repository.*
+import br.edu.ufape.agrofeira.dto.request.PedidoRequest
+import br.edu.ufape.agrofeira.exception.BusinessRuleException
+import br.edu.ufape.agrofeira.exception.ResourceNotFoundException
+import br.edu.ufape.agrofeira.repository.ItemPedidoRepository
+import br.edu.ufape.agrofeira.repository.OfertaEstoqueRepository
+import br.edu.ufape.agrofeira.repository.PedidoRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
+import java.util.*
 
 @Service
 class PedidoService(
-    private val pedidoRepository: PedidoRepository,
-    private val feiraRepository: FeiraRepository,
-    private val clienteRepository: ClienteRepository,
-    private val comercianteRepository: ComercianteRepository,
-    private val itemRepository: ItemRepository,
-    private val estoqueBancaRepository: EstoqueBancaRepository,
-    private val feiraComercianteRepository: FeiraComercianteRepository,
+    private val repository: PedidoRepository,
+    private val itemPedidoRepository: ItemPedidoRepository,
+    private val feiraService: FeiraService,
+    private val produtoService: ProdutoService,
+    private val usuarioService: UsuarioService,
+    private val reservaEstoqueService: ReservaEstoqueService,
+    private val ofertaEstoqueRepository: OfertaEstoqueRepository,
 ) {
-    fun listarTodos(): List<Pedido> = pedidoRepository.findAll()
-
-    fun listarPorFeira(feiraId: String): List<Pedido> = pedidoRepository.findByFeiraId(feiraId)
-
-    fun buscarPorId(id: String): Pedido = pedidoRepository.findById(id).orElseThrow { RuntimeException("Pedido não encontrado") }
+    fun listar(pageable: Pageable): Page<Pedido> = repository.findAll(pageable)
 
     @Transactional
     fun criar(
-        feiraId: String,
-        clienteId: String,
-        comercianteVendedorId: String,
-        tipoRetirada: TipoRetirada,
-        taxaEntrega: BigDecimal,
-        itens: List<Pair<String, BigDecimal>>,
+        request: PedidoRequest,
+        consumidorId: UUID,
     ): Pedido {
-        val feira =
-            feiraRepository
-                .findById(feiraId)
-                .orElseThrow { RuntimeException("Feira não encontrada") }
-        val cliente =
-            clienteRepository
-                .findById(clienteId)
-                .orElseThrow { RuntimeException("Cliente não encontrado") }
-        val comercianteVendedor =
-            comercianteRepository
-                .findById(comercianteVendedorId)
-                .orElseThrow { RuntimeException("Comerciante não encontrado") }
+        val feira = feiraService.buscarPorId(request.feiraId)
+        val consumidor = usuarioService.buscarPorId(consumidorId)
 
-        val itensList =
-            itens.map { (itemId, quantidade) ->
-                val item =
-                    itemRepository
-                        .findById(itemId)
-                        .orElseThrow { RuntimeException("Item não encontrado") }
-                Pair(item, quantidade)
-            }
-
-        val valorProdutos =
-            itensList.sumOf { (item, quantidade) ->
-                item.precoBase.multiply(quantidade)
-            }
-        val valorTotal = valorProdutos.add(taxaEntrega)
-
-        // Primeiro salva o pedido sem itens
         val pedido =
-            pedidoRepository.save(
-                Pedido(
-                    feira = feira,
-                    cliente = cliente,
-                    comercianteVendedor = comercianteVendedor,
-                    tipoRetirada = tipoRetirada,
-                    taxaEntrega = taxaEntrega,
-                    valorProdutos = valorProdutos,
-                    valorTotal = valorTotal,
-                    status = StatusPedido.PENDENTE,
-                ),
+            Pedido(
+                feira = feira,
+                consumidor = consumidor,
+                tipoRetirada = request.tipoRetirada,
+                taxaEntrega =
+                    if (request.tipoRetirada == br.edu.ufape.agrofeira.domain.enums.TipoRetirada.ENTREGA) {
+                        BigDecimal("7.00")
+                    } else {
+                        BigDecimal.ZERO
+                    },
             )
 
-        // Depois salva os itens com o pedido já persistido
-        val itensPedido =
-            itensList.map { (item, quantidade) ->
+        var totalProdutos = BigDecimal.ZERO
+
+        request.itens.forEach { itemReq ->
+            val produto = produtoService.buscarPorId(itemReq.produtoId)
+            val ofertas = ofertaEstoqueRepository.buscarPorFeiraEProduto(feira.id, produto.id)
+            if (ofertas.isEmpty()) throw BusinessRuleException("Produto ${produto.nome} não disponível nesta feira")
+
+            var reservado = false
+            for (oferta in ofertas) {
+                if (reservaEstoqueService.reservar(oferta.id, itemReq.quantidade)) {
+                    reservado = true
+                    break
+                }
+            }
+
+            if (!reservado) throw BusinessRuleException("Estoque insuficiente para o produto ${produto.nome}")
+
+            val itemPedido =
                 ItemPedido(
                     pedido = pedido,
-                    item = item,
-                    quantidade = quantidade,
-                    valorUnitario = item.precoBase,
-                    valorTotal = item.precoBase.multiply(quantidade),
-                )
-            }
-
-        pedido.itens.addAll(itensPedido)
-        return pedidoRepository.save(pedido)
-    }
-
-    // Retorna para cada item do pedido quais bancas têm disponível,
-    // quanto cada uma tem e quanto cada uma já vendeu — para o admin decidir o rateio
-    fun consultarDisponibilidadeParaRateio(pedidoId: String): Map<String, List<EstoqueBanca>> {
-        val pedido = buscarPorId(pedidoId)
-        return pedido.itens.associate { itemPedido ->
-            itemPedido.item.nome to
-                estoqueBancaRepository
-                    .findDisponiveisPorFeiraEItemOrdenadoPorMenosVendido(
-                        pedido.feira.id,
-                        itemPedido.item.id,
-                    )
-        }
-    }
-
-    // Admin confirma o rateio — recebe mapa de itemPedidoId -> lista de (estoqueBancaId, quantidade)
-    @Transactional
-    fun confirmarRateio(
-        pedidoId: String,
-        rateio: Map<String, List<Pair<String, BigDecimal>>>,
-    ): Pedido {
-        val pedido = buscarPorId(pedidoId)
-
-        pedido.itens.forEach { itemPedido ->
-            val alocacoes = rateio[itemPedido.id] ?: return@forEach
-
-            alocacoes.forEach { (estoqueBancaId, quantidade) ->
-                val estoque =
-                    estoqueBancaRepository
-                        .findById(estoqueBancaId)
-                        .orElseThrow { RuntimeException("Estoque não encontrado") }
-
-                // Decrementa o estoque disponível
-                estoqueBancaRepository.save(
-                    estoque.copy(
-                        quantidadeReservada = estoque.quantidadeReservada.add(quantidade),
-                    ),
+                    produto = produto,
+                    quantidade = itemReq.quantidade,
+                    valorUnitario = produto.precoBase,
+                    nomeItem = produto.nome,
+                    unidadeMedida = produto.unidadeMedida,
                 )
 
-                // Atualiza o total vendido da banca
-                val feiraComercianteEntity = estoque.feiraComercianteEntity
-                val valorAlocado = estoque.item.precoBase.multiply(quantidade)
-                feiraComercianteRepository.save(
-                    feiraComercianteEntity.copy(
-                        totalVendido = feiraComercianteEntity.totalVendido.add(valorAlocado),
-                    ),
-                )
-
-                // Registra o rateio
-                itemPedido.rateios.add(
-                    RateioItem(
-                        itemPedido = itemPedido,
-                        estoqueBanca = estoque,
-                        quantidadeAlocada = quantidade,
-                        valorAlocado = valorAlocado,
-                    ),
-                )
-            }
+            pedido.itens.add(itemPedido)
+            totalProdutos = totalProdutos.add(itemPedido.valorUnitario.multiply(itemPedido.quantidade))
         }
 
-        return pedidoRepository.save(pedido.copy(status = StatusPedido.CONFIRMADO))
+        val pedidoFinal =
+            pedido.copy(
+                valorProdutos = totalProdutos,
+                valorTotal = totalProdutos.add(pedido.taxaEntrega),
+                itens = pedido.itens,
+            )
+
+        return repository.save(pedidoFinal)
     }
 
+    fun buscarPorId(id: UUID): Pedido =
+        repository
+            .findById(id)
+            .orElseThrow { ResourceNotFoundException("Pedido", id.toString()) }
+
+    fun buscarItens(pedidoId: UUID): List<ItemPedido> = itemPedidoRepository.findByPedidoId(pedidoId)
+
     @Transactional
-    fun atualizarStatus(
-        id: String,
-        status: StatusPedido,
-    ): Pedido {
+    fun deletar(id: UUID) {
         val pedido = buscarPorId(id)
-        return pedidoRepository.save(pedido.copy(status = status))
+        repository.delete(pedido)
     }
 }

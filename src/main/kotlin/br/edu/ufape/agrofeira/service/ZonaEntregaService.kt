@@ -1,36 +1,55 @@
 package br.edu.ufape.agrofeira.service
 
 import br.edu.ufape.agrofeira.domain.entity.ZonaEntrega
-import br.edu.ufape.agrofeira.domain.repository.ZonaEntregaRepository
+import br.edu.ufape.agrofeira.dto.request.ZonaEntregaRequest
+import br.edu.ufape.agrofeira.exception.ResourceNotFoundException
+import br.edu.ufape.agrofeira.repository.ZonaEntregaRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
+import java.util.*
 
 @Service
 class ZonaEntregaService(
-    private val zonaEntregaRepository: ZonaEntregaRepository,
+    private val repository: ZonaEntregaRepository,
 ) {
-    fun listarTodas(): List<ZonaEntrega> = zonaEntregaRepository.findAll()
+    fun listar(): List<ZonaEntrega> = repository.findAll()
 
-    fun buscarPorId(id: String): ZonaEntrega =
-        zonaEntregaRepository.findById(id).orElseThrow { RuntimeException("Zona de entrega não encontrada") }
-
-    fun buscarPorBairro(bairro: String): ZonaEntrega? = zonaEntregaRepository.findByBairroIgnoreCase(bairro)
+    fun buscarPorId(id: UUID): ZonaEntrega =
+        repository
+            .findById(id)
+            .orElseThrow { ResourceNotFoundException("Zona de Entrega", id.toString()) }
 
     @Transactional
-    fun criar(zonaEntrega: ZonaEntrega): ZonaEntrega = zonaEntregaRepository.save(zonaEntrega)
+    fun criar(request: ZonaEntregaRequest): ZonaEntrega {
+        val zona =
+            ZonaEntrega(
+                bairro = request.bairro,
+                regiao = request.regiao,
+                taxa = request.taxa,
+            )
+        return repository.save(zona)
+    }
 
     @Transactional
     fun atualizar(
-        id: String,
-        zonaEntrega: ZonaEntrega,
+        id: UUID,
+        request: ZonaEntregaRequest,
     ): ZonaEntrega {
-        val existente = buscarPorId(id)
-        return zonaEntregaRepository.save(
-            existente.copy(
-                bairro = zonaEntrega.bairro,
-                regiao = zonaEntrega.regiao,
-                taxa = zonaEntrega.taxa,
-            ),
-        )
+        val zona = buscarPorId(id)
+        val zonaAtualizada =
+            zona.copy(
+                bairro = request.bairro,
+                regiao = request.regiao,
+                taxa = request.taxa,
+                atualizadoEm = LocalDateTime.now(),
+            )
+        return repository.save(zonaAtualizada)
+    }
+
+    @Transactional
+    fun deletar(id: UUID) {
+        val zona = buscarPorId(id)
+        repository.delete(zona)
     }
 }

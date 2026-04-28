@@ -1,25 +1,38 @@
 package br.edu.ufape.agrofeira.domain.entity
 
 import jakarta.persistence.*
+import java.time.LocalDateTime
+import java.util.*
 
 @Entity
 @Table(name = "enderecos")
-data class Endereco(
+class Endereco(
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    val id: String = "",
-    @ManyToOne
-    @JoinColumn(name = "cliente_id", nullable = false)
-    val cliente: Cliente = Cliente(),
-    @ManyToOne
-    @JoinColumn(name = "zona_entrega_id")
-    val zonaEntrega: ZonaEntrega? = null,
-    val cep: String? = null,
-    val rua: String? = null,
-    val numero: String? = null,
-    val complemento: String? = null,
-    val bairro: String? = null,
-    val cidade: String? = null,
-    val estado: String? = null,
-    val observacao: String? = null,
-)
+    @Column(name = "usuario_id")
+    var usuarioId: UUID? = null,
+    @OneToOne(fetch = FetchType.LAZY)
+    @MapsId
+    @JoinColumn(name = "usuario_id")
+    var usuario: Usuario? = null,
+    var rua: String? = null,
+    var numero: String? = null,
+    var complemento: String? = null,
+    var cidade: String? = null,
+    var estado: String? = null,
+    var cep: String? = null,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "zona_entrega_id", nullable = false)
+    var zonaEntrega: ZonaEntrega? = null,
+    @Column(name = "criado_em", nullable = false, updatable = false)
+    val criadoEm: LocalDateTime = LocalDateTime.now(),
+    @Column(name = "atualizado_em", nullable = false)
+    var atualizadoEm: LocalDateTime = LocalDateTime.now(),
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Endereco) return false
+        return usuarioId != null && usuarioId == other.usuarioId
+    }
+
+    override fun hashCode(): Int = 31 // Standard for JPA entities with UUID PK
+}

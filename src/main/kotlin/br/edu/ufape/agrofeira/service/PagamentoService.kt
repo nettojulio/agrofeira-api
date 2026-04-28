@@ -1,41 +1,46 @@
 package br.edu.ufape.agrofeira.service
 
 import br.edu.ufape.agrofeira.domain.entity.Pagamento
-import br.edu.ufape.agrofeira.domain.repository.PagamentoRepository
-import br.edu.ufape.agrofeira.domain.repository.PedidoRepository
+import br.edu.ufape.agrofeira.domain.enums.StatusPagamento
+import br.edu.ufape.agrofeira.dto.request.PagamentoRequest
+import br.edu.ufape.agrofeira.exception.ResourceNotFoundException
+import br.edu.ufape.agrofeira.repository.PagamentoRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.math.BigDecimal
 import java.time.LocalDateTime
+import java.util.*
 
 @Service
 class PagamentoService(
-    private val pagamentoRepository: PagamentoRepository,
-    private val pedidoRepository: PedidoRepository,
+    private val repository: PagamentoRepository,
+    private val pedidoService: PedidoService,
 ) {
-    fun listarPorPedido(pedidoId: String): List<Pagamento> = pagamentoRepository.findByPedidoId(pedidoId)
+    fun buscarPorId(id: UUID): Pagamento =
+        repository
+            .findById(id)
+            .orElseThrow { ResourceNotFoundException("Pagamento", id.toString()) }
 
-    fun buscarPorId(id: String): Pagamento = pagamentoRepository.findById(id).orElseThrow { RuntimeException("Pagamento não encontrado") }
+    fun listarPorPedido(pedidoId: UUID): List<Pagamento> = repository.findByPedidoId(pedidoId)
 
     @Transactional
-    fun registrar(
-        pedidoId: String,
-        metodo: String,
-        valor: BigDecimal,
-    ): Pagamento {
-        val pedido =
-            pedidoRepository
-                .findById(pedidoId)
-                .orElseThrow { RuntimeException("Pedido não encontrado") }
+    fun registrar(request: PagamentoRequest): Pagamento {
+        val pedido = pedidoService.buscarPorId(request.pedidoId)
 
-        return pagamentoRepository.save(
+        val pagamento =
             Pagamento(
                 pedido = pedido,
-                valor = valor,
-                metodo = metodo,
-                status = "PAGO",
-                pagoEm = LocalDateTime.now(),
-            ),
-        )
+                valor = request.valor,
+                metodo = request.metodo,
+                status = request.status,
+                pagoEm = if (request.status == StatusPagamento.PAGO) LocalDateTime.now() else null,
+            )
+
+        return repository.save(pagamento)
+    }
+
+    @Transactional
+    fun deletar(id: UUID) {
+        val pagamento = buscarPorId(id)
+        repository.delete(pagamento)
     }
 }

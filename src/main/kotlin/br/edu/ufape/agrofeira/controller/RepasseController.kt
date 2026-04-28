@@ -1,51 +1,57 @@
 package br.edu.ufape.agrofeira.controller
 
-import br.edu.ufape.agrofeira.dto.RepasseDTO
-import br.edu.ufape.agrofeira.service.RepasseService
+import br.edu.ufape.agrofeira.dto.response.ApiResponse
+import br.edu.ufape.agrofeira.security.annotations.IsManagerOrAdmin
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import java.math.BigDecimal
-
-data class RegistrarRepasseRequest(
-    val feiraComercianteId: String,
-    val taxaAssociacao: BigDecimal = BigDecimal.ZERO,
-)
+import java.util.*
 
 @RestController
-@RequestMapping("/api/repasses")
-class RepasseController(
-    private val repasseService: RepasseService,
-) {
+@RequestMapping("/api/v1/repasses")
+@Tag(name = "Repasses", description = "Pagamento aos Comerciantes")
+@IsManagerOrAdmin
+class RepasseController {
     @GetMapping
-    fun listarTodos() =
-        ResponseEntity.ok(
-            repasseService.listarTodos().map { RepasseDTO.from(it) },
-        )
-
-    @GetMapping("/feira/{feiraId}")
-    fun listarPorFeira(
-        @PathVariable feiraId: String,
-    ) = ResponseEntity.ok(repasseService.listarPorFeira(feiraId).map { RepasseDTO.from(it) })
+    @Operation(summary = "Listar Todos os Repasses")
+    fun listarTodos(): ResponseEntity<ApiResponse<Any>> =
+        ResponseEntity
+            .status(HttpStatus.NOT_IMPLEMENTED)
+            .body(ApiResponse(success = false, message = "Not Implemented"))
 
     @GetMapping("/comerciante/{comercianteId}")
+    @Operation(summary = "Listar Repasses por Comerciante")
     fun listarPorComerciante(
-        @PathVariable comercianteId: String,
-    ) = ResponseEntity.ok(repasseService.listarPorComerciante(comercianteId).map { RepasseDTO.from(it) })
+        @PathVariable comercianteId: UUID,
+    ): ResponseEntity<ApiResponse<Any>> =
+        ResponseEntity
+            .status(HttpStatus.NOT_IMPLEMENTED)
+            .body(ApiResponse(success = false, message = "Not Implemented"))
+
+    @GetMapping("/feira/{feiraId}")
+    @Operation(summary = "Listar Repasses por Feira")
+    fun listarPorFeira(
+        @PathVariable feiraId: UUID,
+    ): ResponseEntity<ApiResponse<Any>> =
+        ResponseEntity
+            .status(HttpStatus.NOT_IMPLEMENTED)
+            .body(ApiResponse(success = false, message = "Not Implemented"))
 
     @GetMapping("/feira/{feiraId}/totais")
+    @Operation(summary = "Listar Totais por Feira")
     fun listarTotaisPorFeira(
-        @PathVariable feiraId: String,
-    ) = ResponseEntity.ok(repasseService.listarTotalPorComerciantesNaFeira(feiraId))
+        @PathVariable feiraId: UUID,
+    ): ResponseEntity<ApiResponse<Any>> =
+        ResponseEntity
+            .status(HttpStatus.NOT_IMPLEMENTED)
+            .body(ApiResponse(success = false, message = "Not Implemented"))
 
     @PostMapping
-    fun registrarRepasse(
-        @RequestBody request: RegistrarRepasseRequest,
-    ) = ResponseEntity.ok(
-        RepasseDTO.from(
-            repasseService.registrarRepasse(
-                request.feiraComercianteId,
-                request.taxaAssociacao,
-            ),
-        ),
-    )
+    @Operation(summary = "Registrar Repasse")
+    fun registrarRepasse(): ResponseEntity<ApiResponse<Any>> =
+        ResponseEntity
+            .status(HttpStatus.NOT_IMPLEMENTED)
+            .body(ApiResponse(success = false, message = "Not Implemented"))
 }
