@@ -97,6 +97,41 @@ fun Endereco.toDTO() =
         zonaEntrega = zonaEntrega?.toDTO(),
     )
 
+fun Repasse.toDTO() =
+    RepasseDTO(
+        id = id,
+        rateioResultadoId = rateioResultado.id,
+        comerciante = comerciante.toDTO(),
+        feiraId = rateioResultado.feira.id,
+        valorBruto = valorBruto,
+        valorLiquido = valorLiquido,
+        status = status.name,
+        repassadoEm = repassadoEm,
+        criadoEm = criadoEm,
+    )
+
+fun RateioResultado.toDTO() =
+    RateioResultadoDTO(
+        id = id,
+        produto = produto.toDTO(),
+        quantidadeSequestrada = quantidadeSequestrada,
+        valorBrutoVenda = valorBrutoVenda,
+        statusProcessamento = statusProcessamento.name,
+    )
+
+fun OfertaEstoque.toDTO() =
+    OfertaEstoqueDTO(
+        id = id,
+        feira = feira.toDTO(),
+        comerciante = comerciante.toDTO(),
+        produto = produto.toDTO(),
+        quantidadeOfertada = quantidadeOfertada,
+        quantidadeReservada = quantidadeReservada,
+        quantidadeDisponivel = quantidadeOfertada.subtract(quantidadeReservada),
+        criadoEm = criadoEm,
+        atualizadoEm = atualizadoEm,
+    )
+
 fun Relatorio.toDTO() =
     RelatorioDTO(
         id = id,

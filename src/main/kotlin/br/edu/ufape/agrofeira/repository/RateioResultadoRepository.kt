@@ -6,4 +6,9 @@ import java.util.*
 
 interface RateioResultadoRepository : JpaRepository<RateioResultado, UUID> {
     fun findByFeiraId(feiraId: UUID): List<RateioResultado>
+
+    fun findByFeiraIdAndComercianteId(
+        feiraId: UUID,
+        comercianteId: UUID,
+    ): List<RateioResultado>
 }

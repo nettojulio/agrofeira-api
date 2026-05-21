@@ -103,19 +103,34 @@ class PedidoController(
     @Operation(summary = "Atualizar Status do Pedido")
     fun atualizarStatus(
         @PathVariable id: UUID,
-    ): ResponseEntity<ApiResponse<Any>> =
-        ResponseEntity
-            .status(HttpStatus.NOT_IMPLEMENTED)
-            .body(ApiResponse(success = false, message = "Not Implemented"))
+        @RequestParam novoStatus: br.edu.ufape.agrofeira.domain.enums.StatusPedido,
+    ): ResponseEntity<ApiResponse<PedidoDTO>> {
+        val pedido = service.atualizarStatus(id, novoStatus)
+        val itens = service.buscarItens(pedido.id)
+        return ResponseEntity.ok(
+            ApiResponse(
+                success = true,
+                message = "Status do pedido atualizado com sucesso",
+                data = pedido.toDTO(itens),
+            ),
+        )
+    }
 
     @GetMapping("/feira/{feiraId}")
-    @Operation(summary = "Buscar pedidos de uma feira especifica")
+    @IsManagerOrAdmin
+    @Operation(summary = "Buscar pedidos de uma feira específica")
     fun buscarPorFeira(
         @PathVariable feiraId: UUID,
-    ): ResponseEntity<ApiResponse<Any>> =
-        ResponseEntity
-            .status(HttpStatus.NOT_IMPLEMENTED)
-            .body(ApiResponse(success = false, message = "Not Implemented"))
+    ): ResponseEntity<ApiResponse<List<PedidoDTO>>> {
+        val pedidos = service.buscarPorFeira(feiraId).map { it.toDTO(service.buscarItens(it.id)) }
+        return ResponseEntity.ok(
+            ApiResponse(
+                success = true,
+                message = "Pedidos da feira recuperados com sucesso",
+                data = pedidos,
+            ),
+        )
+    }
 
     @GetMapping("/{id}/rateio")
     @Operation(summary = "Consultar Rateio")

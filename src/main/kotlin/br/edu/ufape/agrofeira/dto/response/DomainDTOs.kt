@@ -98,6 +98,74 @@ data class RelatorioDTO(
     val criadoEm: LocalDateTime,
 )
 
+@Schema(description = "Dados do repasse a um comerciante")
+data class RepasseDTO(
+    val id: UUID,
+    val rateioResultadoId: UUID,
+    val comerciante: UsuarioDTO,
+    val feiraId: UUID,
+    val valorBruto: BigDecimal,
+    val valorLiquido: BigDecimal,
+    val status: String,
+    val repassadoEm: LocalDateTime?,
+    val criadoEm: LocalDateTime,
+)
+
+@Schema(description = "Totais de repasse de um comerciante em uma feira")
+data class RepasseTotaisDTO(
+    val comerciante: UsuarioDTO,
+    val totalBruto: BigDecimal,
+    val totalLiquido: BigDecimal,
+    val quantidadeRepasses: Int,
+)
+
+@Schema(description = "Resultado do rateio de um comerciante em uma feira")
+data class RateioResultadoDTO(
+    val id: UUID,
+    val produto: ProdutoDTO,
+    val quantidadeSequestrada: BigDecimal,
+    val valorBrutoVenda: BigDecimal,
+    val statusProcessamento: String,
+)
+
+@Schema(description = "Visão geral e balanço financeiro de uma feira")
+data class FeiraDetalhesDTO(
+    val id: UUID,
+    val dataHora: LocalDateTime,
+    val status: String,
+    val totalPedidos: Int,
+    val totalComerciantes: Int,
+    val totalProdutos: Int,
+    val valorTotalPedidos: BigDecimal,
+    val valorTotalProdutos: BigDecimal,
+    val totalTaxasEntrega: BigDecimal,
+    val pedidosPorStatus: Map<String, Int>,
+    val totalRateado: BigDecimal,
+)
+
+@Schema(description = "Participação de um comerciante em uma feira")
+data class FeiraComercianteDTO(
+    val comerciante: UsuarioDTO,
+    val ofertas: List<OfertaEstoqueDTO>,
+    val rateioResultados: List<RateioResultadoDTO>,
+    val totalOfertado: BigDecimal,
+    val totalSequestrado: BigDecimal,
+    val totalBrutoVenda: BigDecimal,
+)
+
+@Schema(description = "Dados da oferta de estoque de um comerciante em uma feira")
+data class OfertaEstoqueDTO(
+    val id: UUID,
+    val feira: FeiraDTO,
+    val comerciante: UsuarioDTO,
+    val produto: ProdutoDTO,
+    val quantidadeOfertada: BigDecimal,
+    val quantidadeReservada: BigDecimal,
+    val quantidadeDisponivel: BigDecimal,
+    val criadoEm: LocalDateTime,
+    val atualizadoEm: LocalDateTime,
+)
+
 @Schema(description = "Opção de domínio para seleção")
 data class OpcaoDTO(
     val value: String,
