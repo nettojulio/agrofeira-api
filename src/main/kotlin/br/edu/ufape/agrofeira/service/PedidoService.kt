@@ -54,32 +54,44 @@ class PedidoService(
 
         request.itens.forEach { itemReq ->
             val produto = produtoService.buscarPorId(itemReq.produtoId)
+
+            // Ordena pelo menor estoque reservado: quem vendeu menos vai primeiro (rotatividade)
             val ofertas = ofertaEstoqueRepository.buscarPorFeiraEProduto(feira.id, produto.id)
+                .sortedBy { it.quantidadeReservada }
+
             if (ofertas.isEmpty()) throw BusinessRuleException("Produto ${produto.nome} não disponível nesta feira")
 
-            var ofertaReservada: br.edu.ufape.agrofeira.domain.entity.OfertaEstoque? = null
+            var quantidadeRestante = itemReq.quantidade
+
             for (oferta in ofertas) {
-                if (reservaEstoqueService.reservar(oferta.id, itemReq.quantidade)) {
-                    ofertaReservada = oferta
-                    break
+                if (quantidadeRestante <= BigDecimal.ZERO) break
+
+                val disponivel = oferta.quantidadeOfertada - oferta.quantidadeReservada
+                if (disponivel <= BigDecimal.ZERO) continue
+
+                // Pega o máximo disponível neste vendedor, até o que ainda falta
+                val quantidadeDestaOferta = quantidadeRestante.min(disponivel)
+
+                if (reservaEstoqueService.reservar(oferta.id, quantidadeDestaOferta)) {
+                    pedido.itens.add(
+                        ItemPedido(
+                            pedido = pedido,
+                            produto = produto,
+                            ofertaEstoque = oferta,
+                            quantidade = quantidadeDestaOferta,
+                            valorUnitario = produto.precoBase,
+                            nomeItem = produto.nome,
+                            unidadeMedida = produto.unidadeMedida,
+                        ),
+                    )
+                    totalProdutos = totalProdutos.add(produto.precoBase.multiply(quantidadeDestaOferta))
+                    quantidadeRestante = quantidadeRestante.subtract(quantidadeDestaOferta)
                 }
             }
 
-            if (ofertaReservada == null) throw BusinessRuleException("Estoque insuficiente para o produto ${produto.nome}")
-
-            val itemPedido =
-                ItemPedido(
-                    pedido = pedido,
-                    produto = produto,
-                    ofertaEstoque = ofertaReservada,
-                    quantidade = itemReq.quantidade,
-                    valorUnitario = produto.precoBase,
-                    nomeItem = produto.nome,
-                    unidadeMedida = produto.unidadeMedida,
-                )
-
-            pedido.itens.add(itemPedido)
-            totalProdutos = totalProdutos.add(itemPedido.valorUnitario.multiply(itemPedido.quantidade))
+            if (quantidadeRestante > BigDecimal.ZERO) {
+                throw BusinessRuleException("Estoque insuficiente para o produto ${produto.nome}")
+            }
         }
 
         val pedidoFinal =
