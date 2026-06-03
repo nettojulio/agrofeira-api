@@ -16,6 +16,8 @@ local.properties
 .settings/
 .loadpath
 .recommenders
+NOTAS-CONTINUACAO.md
+src/main/resources/application-dev.properties
 
 # External tool builders
 .externalToolBuilders/

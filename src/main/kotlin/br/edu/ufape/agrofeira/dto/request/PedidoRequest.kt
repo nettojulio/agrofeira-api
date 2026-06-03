@@ -16,6 +16,8 @@ data class PedidoRequest(
     val tipoRetirada: TipoRetirada,
     @field:NotEmpty(message = "O pedido deve conter pelo menos um item")
     val itens: List<ItemPedidoRequest>,
+    @Schema(description = "ID do consumidor. Se omitido, usa o usuário autenticado")
+    val consumidorId: UUID? = null,
 )
 
 @Schema(description = "Item de um pedido")

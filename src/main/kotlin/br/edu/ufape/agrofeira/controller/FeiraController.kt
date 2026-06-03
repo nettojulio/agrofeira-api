@@ -4,7 +4,10 @@ import br.edu.ufape.agrofeira.domain.enums.StatusFeira
 import br.edu.ufape.agrofeira.dto.mapper.toDTO
 import br.edu.ufape.agrofeira.dto.request.FeiraRequest
 import br.edu.ufape.agrofeira.dto.response.ApiResponse
+import br.edu.ufape.agrofeira.dto.response.FeiraComercianteDTO
+import br.edu.ufape.agrofeira.dto.response.FeiraDetalhesDTO
 import br.edu.ufape.agrofeira.dto.response.FeiraDTO
+import br.edu.ufape.agrofeira.dto.response.FeiraRateioDTO
 import br.edu.ufape.agrofeira.security.annotations.IsManagerOrAdmin
 import br.edu.ufape.agrofeira.service.FeiraService
 import io.swagger.v3.oas.annotations.Operation
@@ -102,18 +105,29 @@ class FeiraController(
     @Operation(summary = "Detalhamento da feira (Visão Geral, Balanço Financeiro)")
     fun detalhesDaFeira(
         @PathVariable id: UUID,
-    ): ResponseEntity<ApiResponse<Any>> =
-        ResponseEntity
-            .status(HttpStatus.NOT_IMPLEMENTED)
-            .body(ApiResponse(success = false, message = "Not Implemented"))
+    ): ResponseEntity<ApiResponse<FeiraDetalhesDTO>> {
+        val detalhes = service.detalharFeira(id)
+        return ResponseEntity.ok(ApiResponse(success = true, message = "Detalhes da feira recuperados com sucesso", data = detalhes))
+    }
+
+    @GetMapping("/{id}/rateio")
+    @IsManagerOrAdmin
+    @Operation(summary = "Resultado consolidado do rateio da feira (todos os feirantes)")
+    fun rateio(
+        @PathVariable id: UUID,
+    ): ResponseEntity<ApiResponse<FeiraRateioDTO>> {
+        val rateio = service.buscarRateioDaFeira(id)
+        return ResponseEntity.ok(ApiResponse(success = true, message = "Rateio da feira recuperado com sucesso", data = rateio))
+    }
 
     @GetMapping("/{id}/comerciante/{comercianteId}")
-    @Operation(summary = "Buscar Feira Comerciante")
+    @IsManagerOrAdmin
+    @Operation(summary = "Participação de um comerciante em uma feira")
     fun buscarPorComerciante(
         @PathVariable id: UUID,
         @PathVariable comercianteId: UUID,
-    ): ResponseEntity<ApiResponse<Any>> =
-        ResponseEntity
-            .status(HttpStatus.NOT_IMPLEMENTED)
-            .body(ApiResponse(success = false, message = "Not Implemented"))
+    ): ResponseEntity<ApiResponse<FeiraComercianteDTO>> {
+        val participacao = service.buscarParticipacaoComerciante(id, comercianteId)
+        return ResponseEntity.ok(ApiResponse(success = true, message = "Participação do comerciante recuperada com sucesso", data = participacao))
+    }
 }

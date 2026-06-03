@@ -3,9 +3,12 @@ package br.edu.ufape.agrofeira.controller
 import br.edu.ufape.agrofeira.dto.mapper.toDTO
 import br.edu.ufape.agrofeira.dto.request.RelatorioRequest
 import br.edu.ufape.agrofeira.dto.response.ApiResponse
+import br.edu.ufape.agrofeira.dto.response.FaturamentoMensalDTO
 import br.edu.ufape.agrofeira.dto.response.RelatorioDTO
+import br.edu.ufape.agrofeira.dto.response.RepasseTotaisDTO
 import br.edu.ufape.agrofeira.security.annotations.IsManagerOrAdmin
 import br.edu.ufape.agrofeira.service.RelatorioService
+import br.edu.ufape.agrofeira.service.RepasseService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
@@ -15,6 +18,7 @@ import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDate
 import java.util.*
 
 @RestController
@@ -23,6 +27,7 @@ import java.util.*
 @IsManagerOrAdmin
 class RelatorioController(
     private val service: RelatorioService,
+    private val repasseService: RepasseService,
 ) {
     @GetMapping
     @Operation(summary = "Listar registros de relatórios")
@@ -85,19 +90,26 @@ class RelatorioController(
     }
 
     @GetMapping("/por-mes")
-    @Operation(summary = "Relatório por Mês (Legado/Atalho)")
-    fun relatorioMensal(): ResponseEntity<ApiResponse<Any>> =
-        ResponseEntity
-            .status(HttpStatus.NOT_IMPLEMENTED)
-            .body(ApiResponse(success = false, message = "Utilize o POST para gerar relatórios detalhados"))
+    @Operation(summary = "Faturamento mensal agregado dos repasses")
+    fun relatorioMensal(
+        @RequestParam(required = false) ano: Int?,
+    ): ResponseEntity<ApiResponse<List<FaturamentoMensalDTO>>> {
+        val anoRef = ano ?: LocalDate.now().year
+        val dados = repasseService.relatorioMensal(anoRef)
+        return ResponseEntity.ok(
+            ApiResponse(success = true, message = "Relatório mensal gerado com sucesso", data = dados),
+        )
+    }
 
     @GetMapping("/por-comerciante")
-    @Operation(summary = "Relatório por Comerciante (Legado/Atalho)")
+    @Operation(summary = "Faturamento total por comerciante (todos os períodos)")
     fun relatorioComerciante(
         @RequestParam(required = false) ano: Int?,
         @RequestParam(required = false) mes: Int?,
-    ): ResponseEntity<ApiResponse<Any>> =
-        ResponseEntity
-            .status(HttpStatus.NOT_IMPLEMENTED)
-            .body(ApiResponse(success = false, message = "Utilize o POST para gerar relatórios detalhados"))
+    ): ResponseEntity<ApiResponse<List<RepasseTotaisDTO>>> {
+        val dados = repasseService.relatorioGeralPorComerciante()
+        return ResponseEntity.ok(
+            ApiResponse(success = true, message = "Relatório por comerciante gerado com sucesso", data = dados),
+        )
+    }
 }

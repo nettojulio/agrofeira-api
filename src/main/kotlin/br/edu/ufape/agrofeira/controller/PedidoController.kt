@@ -58,7 +58,7 @@ class PedidoController(
 
         val userDetails = auth.principal as CustomUserDetails
 
-        val pedido = service.criar(request, userDetails.usuario.id)
+        val pedido = service.criar(request, request.consumidorId ?: userDetails.usuario.id)
         val itens = service.buscarItens(pedido.id)
 
         return ResponseEntity.status(HttpStatus.CREATED).body(
@@ -103,53 +103,33 @@ class PedidoController(
     @Operation(summary = "Atualizar Status do Pedido")
     fun atualizarStatus(
         @PathVariable id: UUID,
-    ): ResponseEntity<ApiResponse<Any>> =
-        ResponseEntity
-            .status(HttpStatus.NOT_IMPLEMENTED)
-            .body(ApiResponse(success = false, message = "Not Implemented"))
+        @RequestParam novoStatus: br.edu.ufape.agrofeira.domain.enums.StatusPedido,
+    ): ResponseEntity<ApiResponse<PedidoDTO>> {
+        val pedido = service.atualizarStatus(id, novoStatus)
+        val itens = service.buscarItens(pedido.id)
+        return ResponseEntity.ok(
+            ApiResponse(
+                success = true,
+                message = "Status do pedido atualizado com sucesso",
+                data = pedido.toDTO(itens),
+            ),
+        )
+    }
 
     @GetMapping("/feira/{feiraId}")
-    @Operation(summary = "Buscar pedidos de uma feira especifica")
+    @IsManagerOrAdmin
+    @Operation(summary = "Buscar pedidos de uma feira específica")
     fun buscarPorFeira(
         @PathVariable feiraId: UUID,
-    ): ResponseEntity<ApiResponse<Any>> =
-        ResponseEntity
-            .status(HttpStatus.NOT_IMPLEMENTED)
-            .body(ApiResponse(success = false, message = "Not Implemented"))
+    ): ResponseEntity<ApiResponse<List<PedidoDTO>>> {
+        val pedidos = service.buscarPorFeira(feiraId).map { it.toDTO(service.buscarItens(it.id)) }
+        return ResponseEntity.ok(
+            ApiResponse(
+                success = true,
+                message = "Pedidos da feira recuperados com sucesso",
+                data = pedidos,
+            ),
+        )
+    }
 
-    @GetMapping("/{id}/rateio")
-    @Operation(summary = "Consultar Rateio")
-    fun consultarRateio(
-        @PathVariable id: UUID,
-    ): ResponseEntity<ApiResponse<Any>> =
-        ResponseEntity
-            .status(HttpStatus.NOT_IMPLEMENTED)
-            .body(ApiResponse(success = false, message = "Not Implemented"))
-
-    @PostMapping("/{id}/rateio/confirmar")
-    @Operation(summary = "Confirmar Rateio")
-    fun confirmarRateio(
-        @PathVariable id: UUID,
-    ): ResponseEntity<ApiResponse<Any>> =
-        ResponseEntity
-            .status(HttpStatus.NOT_IMPLEMENTED)
-            .body(ApiResponse(success = false, message = "Not Implemented"))
-
-    @GetMapping("/{id}/rateio/disponibilidade")
-    @Operation(summary = "Consultar Disponibilidade Rateio")
-    fun consultarDisponibilidadeRateio(
-        @PathVariable id: UUID,
-    ): ResponseEntity<ApiResponse<Any>> =
-        ResponseEntity
-            .status(HttpStatus.NOT_IMPLEMENTED)
-            .body(ApiResponse(success = false, message = "Not Implemented"))
-
-    @PostMapping("/{id}/rateio/confirmar-disponibilidade")
-    @Operation(summary = "Confirmar Disponibilidade de Rateio")
-    fun confirmarDisponibilidadeRateio(
-        @PathVariable id: UUID,
-    ): ResponseEntity<ApiResponse<Any>> =
-        ResponseEntity
-            .status(HttpStatus.NOT_IMPLEMENTED)
-            .body(ApiResponse(success = false, message = "Not Implemented"))
 }

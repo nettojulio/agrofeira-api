@@ -11,6 +11,7 @@ fun Usuario.toDTO() =
         telefone = telefone,
         descricao = descricao,
         perfis = perfis.map { it.nome }.toSet(),
+        categorias = categorias.map { it.name }.toSet(),
     )
 
 fun Usuario.toDetalhadoDTO(endereco: Endereco? = null) =
@@ -21,6 +22,7 @@ fun Usuario.toDetalhadoDTO(endereco: Endereco? = null) =
         telefone = telefone,
         descricao = descricao,
         perfis = perfis.map { it.nome }.toSet(),
+        categorias = categorias.map { it.name }.toSet(),
         endereco = endereco?.toDTO(),
     )
 
@@ -95,6 +97,44 @@ fun Endereco.toDTO() =
         estado = estado,
         cep = cep,
         zonaEntrega = zonaEntrega?.toDTO(),
+    )
+
+fun Repasse.toDTO() =
+    RepasseDTO(
+        id = id,
+        rateioResultadoId = rateioResultado.id,
+        comerciante = comerciante.toDTO(),
+        feiraId = rateioResultado.feira.id,
+        produtoNome = rateioResultado.produto.nome,
+        produtoUnidade = rateioResultado.produto.unidadeMedida.name,
+        quantidadeVendida = rateioResultado.quantidadeSequestrada,
+        valorBruto = valorBruto,
+        valorLiquido = valorLiquido,
+        status = status.name,
+        repassadoEm = repassadoEm,
+        criadoEm = criadoEm,
+    )
+
+fun RateioResultado.toDTO() =
+    RateioResultadoDTO(
+        id = id,
+        produto = produto.toDTO(),
+        quantidadeSequestrada = quantidadeSequestrada,
+        valorBrutoVenda = valorBrutoVenda,
+        statusProcessamento = statusProcessamento.name,
+    )
+
+fun OfertaEstoque.toDTO() =
+    OfertaEstoqueDTO(
+        id = id,
+        feira = feira.toDTO(),
+        comerciante = comerciante.toDTO(),
+        produto = produto.toDTO(),
+        quantidadeOfertada = quantidadeOfertada,
+        quantidadeReservada = quantidadeReservada,
+        quantidadeDisponivel = quantidadeOfertada.subtract(quantidadeReservada),
+        criadoEm = criadoEm,
+        atualizadoEm = atualizadoEm,
     )
 
 fun Relatorio.toDTO() =
