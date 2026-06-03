@@ -5,6 +5,17 @@ import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.util.*
 
+@Schema(description = "Categoria de produto disponível para comerciantes")
+data class CategoriaDTO(
+    val id: String,
+    val nome: String,
+)
+
+@Schema(description = "Lista de categorias de um comerciante")
+data class CategoriasResponseDTO(
+    val categorias: List<String>,
+)
+
 @Schema(description = "Dados resumidos do usuário")
 data class UsuarioDTO(
     val id: UUID,
@@ -14,6 +25,7 @@ data class UsuarioDTO(
     @Schema(description = "Descrição ou biografia do usuário/comerciante")
     val descricao: String?,
     val perfis: Set<String>,
+    val categorias: Set<String> = emptySet(),
 )
 
 @Schema(description = "Dados detalhados do usuário (incluindo endereço)")
@@ -25,6 +37,7 @@ data class UsuarioDetalhadoDTO(
     @Schema(description = "Descrição ou biografia do usuário/comerciante")
     val descricao: String?,
     val perfis: Set<String>,
+    val categorias: Set<String> = emptySet(),
     @Schema(description = "Dados do endereço do usuário")
     val endereco: EnderecoDTO?,
 )
@@ -104,6 +117,9 @@ data class RepasseDTO(
     val rateioResultadoId: UUID,
     val comerciante: UsuarioDTO,
     val feiraId: UUID,
+    val produtoNome: String,
+    val produtoUnidade: String,
+    val quantidadeVendida: BigDecimal,
     val valorBruto: BigDecimal,
     val valorLiquido: BigDecimal,
     val status: String,
@@ -126,6 +142,22 @@ data class RateioResultadoDTO(
     val quantidadeSequestrada: BigDecimal,
     val valorBrutoVenda: BigDecimal,
     val statusProcessamento: String,
+)
+
+@Schema(description = "Resultado do rateio de um comerciante na feira")
+data class ComercianteRateioDTO(
+    val comerciante: UsuarioDTO,
+    val produtos: List<RateioResultadoDTO>,
+    val totalSequestrado: BigDecimal,
+    val totalBrutoVenda: BigDecimal,
+)
+
+@Schema(description = "Resultado consolidado do rateio de uma feira")
+data class FeiraRateioDTO(
+    val feiraId: UUID,
+    val totalRateado: BigDecimal,
+    val totalComerciantes: Int,
+    val comerciantes: List<ComercianteRateioDTO>,
 )
 
 @Schema(description = "Visão geral e balanço financeiro de uma feira")
@@ -164,6 +196,16 @@ data class OfertaEstoqueDTO(
     val quantidadeDisponivel: BigDecimal,
     val criadoEm: LocalDateTime,
     val atualizadoEm: LocalDateTime,
+)
+
+@Schema(description = "Faturamento agregado por mês")
+data class FaturamentoMensalDTO(
+    val ano: Int,
+    val mes: Int,
+    val mesLabel: String,
+    val totalBruto: BigDecimal,
+    val totalLiquido: BigDecimal,
+    val quantidadeRepasses: Int,
 )
 
 @Schema(description = "Opção de domínio para seleção")

@@ -7,6 +7,7 @@ import br.edu.ufape.agrofeira.dto.response.ApiResponse
 import br.edu.ufape.agrofeira.dto.response.FeiraComercianteDTO
 import br.edu.ufape.agrofeira.dto.response.FeiraDetalhesDTO
 import br.edu.ufape.agrofeira.dto.response.FeiraDTO
+import br.edu.ufape.agrofeira.dto.response.FeiraRateioDTO
 import br.edu.ufape.agrofeira.security.annotations.IsManagerOrAdmin
 import br.edu.ufape.agrofeira.service.FeiraService
 import io.swagger.v3.oas.annotations.Operation
@@ -107,6 +108,16 @@ class FeiraController(
     ): ResponseEntity<ApiResponse<FeiraDetalhesDTO>> {
         val detalhes = service.detalharFeira(id)
         return ResponseEntity.ok(ApiResponse(success = true, message = "Detalhes da feira recuperados com sucesso", data = detalhes))
+    }
+
+    @GetMapping("/{id}/rateio")
+    @IsManagerOrAdmin
+    @Operation(summary = "Resultado consolidado do rateio da feira (todos os feirantes)")
+    fun rateio(
+        @PathVariable id: UUID,
+    ): ResponseEntity<ApiResponse<FeiraRateioDTO>> {
+        val rateio = service.buscarRateioDaFeira(id)
+        return ResponseEntity.ok(ApiResponse(success = true, message = "Rateio da feira recuperado com sucesso", data = rateio))
     }
 
     @GetMapping("/{id}/comerciante/{comercianteId}")

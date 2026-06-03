@@ -57,20 +57,21 @@ class PedidoService(
             val ofertas = ofertaEstoqueRepository.buscarPorFeiraEProduto(feira.id, produto.id)
             if (ofertas.isEmpty()) throw BusinessRuleException("Produto ${produto.nome} não disponível nesta feira")
 
-            var reservado = false
+            var ofertaReservada: br.edu.ufape.agrofeira.domain.entity.OfertaEstoque? = null
             for (oferta in ofertas) {
                 if (reservaEstoqueService.reservar(oferta.id, itemReq.quantidade)) {
-                    reservado = true
+                    ofertaReservada = oferta
                     break
                 }
             }
 
-            if (!reservado) throw BusinessRuleException("Estoque insuficiente para o produto ${produto.nome}")
+            if (ofertaReservada == null) throw BusinessRuleException("Estoque insuficiente para o produto ${produto.nome}")
 
             val itemPedido =
                 ItemPedido(
                     pedido = pedido,
                     produto = produto,
+                    ofertaEstoque = ofertaReservada,
                     quantidade = itemReq.quantidade,
                     valorUnitario = produto.precoBase,
                     nomeItem = produto.nome,
@@ -143,10 +144,14 @@ class PedidoService(
     private fun liberarReservasDoPedido(pedido: Pedido) {
         val itens = itemPedidoRepository.findByPedidoId(pedido.id)
         itens.forEach { item ->
-            val ofertas = ofertaEstoqueRepository.buscarPorFeiraEProduto(pedido.feira.id, item.produto.id)
-            for (oferta in ofertas) {
-                if (reservaEstoqueService.liberar(oferta.id, item.quantidade)) {
-                    break
+            val ofertaEstoque = item.ofertaEstoque
+            if (ofertaEstoque != null) {
+                reservaEstoqueService.liberar(ofertaEstoque.id, item.quantidade)
+            } else {
+                // fallback para pedidos criados antes da migration V2
+                val ofertas = ofertaEstoqueRepository.buscarPorFeiraEProduto(pedido.feira.id, item.produto.id)
+                for (oferta in ofertas) {
+                    if (reservaEstoqueService.liberar(oferta.id, item.quantidade)) break
                 }
             }
         }

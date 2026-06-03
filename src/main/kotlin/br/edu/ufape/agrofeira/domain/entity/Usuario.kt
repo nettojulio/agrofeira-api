@@ -1,5 +1,6 @@
 package br.edu.ufape.agrofeira.domain.entity
 
+import br.edu.ufape.agrofeira.domain.enums.CategoriaProduto
 import jakarta.persistence.*
 import org.hibernate.annotations.SQLDelete
 import org.hibernate.annotations.SQLRestriction
@@ -39,4 +40,9 @@ data class Usuario(
         inverseJoinColumns = [JoinColumn(name = "perfil_id")],
     )
     val perfis: MutableSet<Perfil> = mutableSetOf(),
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "usuario_categorias", joinColumns = [JoinColumn(name = "usuario_id")])
+    @Column(name = "categoria")
+    @Enumerated(EnumType.STRING)
+    val categorias: MutableSet<CategoriaProduto> = mutableSetOf(),
 )

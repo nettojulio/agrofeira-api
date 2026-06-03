@@ -2,9 +2,11 @@ package br.edu.ufape.agrofeira.controller
 
 import br.edu.ufape.agrofeira.dto.mapper.toDTO
 import br.edu.ufape.agrofeira.dto.mapper.toDetalhadoDTO
+import br.edu.ufape.agrofeira.dto.request.CategoriasRequest
 import br.edu.ufape.agrofeira.dto.request.ComercianteRequest
 import br.edu.ufape.agrofeira.dto.request.ComercianteUpdateRequest
 import br.edu.ufape.agrofeira.dto.response.ApiResponse
+import br.edu.ufape.agrofeira.dto.response.CategoriasResponseDTO
 import br.edu.ufape.agrofeira.dto.response.UsuarioDTO
 import br.edu.ufape.agrofeira.dto.response.UsuarioDetalhadoDTO
 import br.edu.ufape.agrofeira.security.annotations.IsManagerOrAdmin
@@ -110,5 +112,38 @@ class ComercianteController(
     ): ResponseEntity<ApiResponse<Unit>> {
         comercianteService.deletar(id)
         return ResponseEntity.ok(ApiResponse(success = true, message = "Comerciante deletado com sucesso"))
+    }
+
+    @GetMapping("/{id}/categorias")
+    @IsManagerOrAdmin
+    @Operation(summary = "Listar categorias do comerciante")
+    fun buscarCategorias(
+        @PathVariable id: UUID,
+    ): ResponseEntity<ApiResponse<CategoriasResponseDTO>> {
+        val categorias = comercianteService.buscarCategorias(id)
+        return ResponseEntity.ok(
+            ApiResponse(
+                success = true,
+                message = "Categorias do comerciante recuperadas com sucesso",
+                data = CategoriasResponseDTO(categorias = categorias),
+            ),
+        )
+    }
+
+    @PutMapping("/{id}/categorias")
+    @IsManagerOrAdmin
+    @Operation(summary = "Atualizar categorias do comerciante")
+    fun atualizarCategorias(
+        @PathVariable id: UUID,
+        @RequestBody request: CategoriasRequest,
+    ): ResponseEntity<ApiResponse<CategoriasResponseDTO>> {
+        val categorias = comercianteService.atualizarCategorias(id, request.categorias)
+        return ResponseEntity.ok(
+            ApiResponse(
+                success = true,
+                message = "Categorias do comerciante atualizadas com sucesso",
+                data = CategoriasResponseDTO(categorias = categorias),
+            ),
+        )
     }
 }

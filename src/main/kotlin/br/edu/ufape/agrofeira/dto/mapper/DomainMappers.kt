@@ -11,6 +11,7 @@ fun Usuario.toDTO() =
         telefone = telefone,
         descricao = descricao,
         perfis = perfis.map { it.nome }.toSet(),
+        categorias = categorias.map { it.name }.toSet(),
     )
 
 fun Usuario.toDetalhadoDTO(endereco: Endereco? = null) =
@@ -21,6 +22,7 @@ fun Usuario.toDetalhadoDTO(endereco: Endereco? = null) =
         telefone = telefone,
         descricao = descricao,
         perfis = perfis.map { it.nome }.toSet(),
+        categorias = categorias.map { it.name }.toSet(),
         endereco = endereco?.toDTO(),
     )
 
@@ -103,6 +105,9 @@ fun Repasse.toDTO() =
         rateioResultadoId = rateioResultado.id,
         comerciante = comerciante.toDTO(),
         feiraId = rateioResultado.feira.id,
+        produtoNome = rateioResultado.produto.nome,
+        produtoUnidade = rateioResultado.produto.unidadeMedida.name,
+        quantidadeVendida = rateioResultado.quantidadeSequestrada,
         valorBruto = valorBruto,
         valorLiquido = valorLiquido,
         status = status.name,

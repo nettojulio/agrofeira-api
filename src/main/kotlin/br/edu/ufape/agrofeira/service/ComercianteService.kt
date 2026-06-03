@@ -1,6 +1,7 @@
 package br.edu.ufape.agrofeira.service
 
 import br.edu.ufape.agrofeira.domain.entity.Usuario
+import br.edu.ufape.agrofeira.domain.enums.CategoriaProduto
 import br.edu.ufape.agrofeira.dto.request.ComercianteRequest
 import br.edu.ufape.agrofeira.dto.request.ComercianteUpdateRequest
 import br.edu.ufape.agrofeira.exception.ResourceNotFoundException
@@ -80,5 +81,25 @@ class ComercianteService(
     fun deletar(id: UUID) {
         buscarPorId(id)
         usuarioRepository.deletarLogicamente(id)
+    }
+
+    fun buscarCategorias(id: UUID): List<String> =
+        buscarPorId(id).categorias.map { it.name }
+
+    @Transactional
+    fun atualizarCategorias(
+        id: UUID,
+        categorias: Set<String>,
+    ): List<String> {
+        val comerciante = buscarPorId(id)
+        val enumCategorias =
+            categorias
+                .mapNotNull { nome ->
+                    runCatching { CategoriaProduto.valueOf(nome) }.getOrNull()
+                }.toSet()
+        comerciante.categorias.clear()
+        comerciante.categorias.addAll(enumCategorias)
+        usuarioRepository.save(comerciante)
+        return comerciante.categorias.map { it.name }
     }
 }

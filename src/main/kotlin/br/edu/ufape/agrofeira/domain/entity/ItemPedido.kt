@@ -16,6 +16,9 @@ data class ItemPedido(
     @ManyToOne
     @JoinColumn(name = "produto_id", nullable = false)
     val produto: Produto = Produto(),
+    @ManyToOne
+    @JoinColumn(name = "oferta_estoque_id", nullable = true)
+    val ofertaEstoque: OfertaEstoque? = null,
     @Column(nullable = false)
     val quantidade: BigDecimal = BigDecimal.ZERO,
     @Column(name = "valor_unitario", nullable = false)

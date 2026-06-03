@@ -58,7 +58,7 @@ class PedidoController(
 
         val userDetails = auth.principal as CustomUserDetails
 
-        val pedido = service.criar(request, userDetails.usuario.id)
+        val pedido = service.criar(request, request.consumidorId ?: userDetails.usuario.id)
         val itens = service.buscarItens(pedido.id)
 
         return ResponseEntity.status(HttpStatus.CREATED).body(
@@ -132,39 +132,4 @@ class PedidoController(
         )
     }
 
-    @GetMapping("/{id}/rateio")
-    @Operation(summary = "Consultar Rateio")
-    fun consultarRateio(
-        @PathVariable id: UUID,
-    ): ResponseEntity<ApiResponse<Any>> =
-        ResponseEntity
-            .status(HttpStatus.NOT_IMPLEMENTED)
-            .body(ApiResponse(success = false, message = "Not Implemented"))
-
-    @PostMapping("/{id}/rateio/confirmar")
-    @Operation(summary = "Confirmar Rateio")
-    fun confirmarRateio(
-        @PathVariable id: UUID,
-    ): ResponseEntity<ApiResponse<Any>> =
-        ResponseEntity
-            .status(HttpStatus.NOT_IMPLEMENTED)
-            .body(ApiResponse(success = false, message = "Not Implemented"))
-
-    @GetMapping("/{id}/rateio/disponibilidade")
-    @Operation(summary = "Consultar Disponibilidade Rateio")
-    fun consultarDisponibilidadeRateio(
-        @PathVariable id: UUID,
-    ): ResponseEntity<ApiResponse<Any>> =
-        ResponseEntity
-            .status(HttpStatus.NOT_IMPLEMENTED)
-            .body(ApiResponse(success = false, message = "Not Implemented"))
-
-    @PostMapping("/{id}/rateio/confirmar-disponibilidade")
-    @Operation(summary = "Confirmar Disponibilidade de Rateio")
-    fun confirmarDisponibilidadeRateio(
-        @PathVariable id: UUID,
-    ): ResponseEntity<ApiResponse<Any>> =
-        ResponseEntity
-            .status(HttpStatus.NOT_IMPLEMENTED)
-            .body(ApiResponse(success = false, message = "Not Implemented"))
 }
