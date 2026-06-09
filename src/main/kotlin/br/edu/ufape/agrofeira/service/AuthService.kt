@@ -5,7 +5,12 @@ import br.edu.ufape.agrofeira.domain.entity.PasswordResetToken
 import br.edu.ufape.agrofeira.domain.entity.RefreshToken
 import br.edu.ufape.agrofeira.domain.entity.Usuario
 import br.edu.ufape.agrofeira.dto.mapper.toDTO
-import br.edu.ufape.agrofeira.dto.request.*
+import br.edu.ufape.agrofeira.dto.request.ForgotPasswordRequest
+import br.edu.ufape.agrofeira.dto.request.LoginRequest
+import br.edu.ufape.agrofeira.dto.request.LogoutRequest
+import br.edu.ufape.agrofeira.dto.request.RefreshTokenRequest
+import br.edu.ufape.agrofeira.dto.request.RegisterRequest
+import br.edu.ufape.agrofeira.dto.request.ResetPasswordRequest
 import br.edu.ufape.agrofeira.dto.response.LoginResponse
 import br.edu.ufape.agrofeira.dto.response.UsuarioDTO
 import br.edu.ufape.agrofeira.exception.InvalidTokenException
@@ -24,7 +29,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.security.MessageDigest
 import java.time.Instant
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 @Service
 class AuthService(

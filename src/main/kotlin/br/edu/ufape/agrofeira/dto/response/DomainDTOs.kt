@@ -3,7 +3,7 @@ package br.edu.ufape.agrofeira.dto.response
 import io.swagger.v3.oas.annotations.media.Schema
 import java.math.BigDecimal
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 @Schema(description = "Categoria de produto disponível para comerciantes")
 data class CategoriaDTO(

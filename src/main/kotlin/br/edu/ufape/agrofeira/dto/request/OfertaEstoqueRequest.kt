@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Digits
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Positive
 import java.math.BigDecimal
-import java.util.*
+import java.util.UUID
 
 @Schema(description = "Dados para cadastro de oferta de estoque")
 data class OfertaEstoqueRequest(

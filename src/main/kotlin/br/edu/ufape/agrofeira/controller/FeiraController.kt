@@ -5,8 +5,8 @@ import br.edu.ufape.agrofeira.dto.mapper.toDTO
 import br.edu.ufape.agrofeira.dto.request.FeiraRequest
 import br.edu.ufape.agrofeira.dto.response.ApiResponse
 import br.edu.ufape.agrofeira.dto.response.FeiraComercianteDTO
-import br.edu.ufape.agrofeira.dto.response.FeiraDetalhesDTO
 import br.edu.ufape.agrofeira.dto.response.FeiraDTO
+import br.edu.ufape.agrofeira.dto.response.FeiraDetalhesDTO
 import br.edu.ufape.agrofeira.dto.response.FeiraRateioDTO
 import br.edu.ufape.agrofeira.security.annotations.IsManagerOrAdmin
 import br.edu.ufape.agrofeira.service.FeiraService
@@ -18,8 +18,17 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
-import java.util.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
+import java.util.UUID
 
 @RestController
 @RequestMapping("/api/v1/feiras")
@@ -107,7 +116,13 @@ class FeiraController(
         @PathVariable id: UUID,
     ): ResponseEntity<ApiResponse<FeiraDetalhesDTO>> {
         val detalhes = service.detalharFeira(id)
-        return ResponseEntity.ok(ApiResponse(success = true, message = "Detalhes da feira recuperados com sucesso", data = detalhes))
+        return ResponseEntity.ok(
+            ApiResponse(
+                success = true,
+                message = "Detalhes da feira recuperados com sucesso",
+                data = detalhes,
+            ),
+        )
     }
 
     @GetMapping("/{id}/rateio")
@@ -117,7 +132,13 @@ class FeiraController(
         @PathVariable id: UUID,
     ): ResponseEntity<ApiResponse<FeiraRateioDTO>> {
         val rateio = service.buscarRateioDaFeira(id)
-        return ResponseEntity.ok(ApiResponse(success = true, message = "Rateio da feira recuperado com sucesso", data = rateio))
+        return ResponseEntity.ok(
+            ApiResponse(
+                success = true,
+                message = "Rateio da feira recuperado com sucesso",
+                data = rateio,
+            ),
+        )
     }
 
     @GetMapping("/{id}/comerciante/{comercianteId}")
@@ -128,6 +149,12 @@ class FeiraController(
         @PathVariable comercianteId: UUID,
     ): ResponseEntity<ApiResponse<FeiraComercianteDTO>> {
         val participacao = service.buscarParticipacaoComerciante(id, comercianteId)
-        return ResponseEntity.ok(ApiResponse(success = true, message = "Participação do comerciante recuperada com sucesso", data = participacao))
+        return ResponseEntity.ok(
+            ApiResponse(
+                success = true,
+                message = "Participação do comerciante recuperada com sucesso",
+                data = participacao,
+            ),
+        )
     }
 }

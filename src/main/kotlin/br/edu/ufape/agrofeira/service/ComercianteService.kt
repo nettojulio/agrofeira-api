@@ -83,8 +83,7 @@ class ComercianteService(
         usuarioRepository.deletarLogicamente(id)
     }
 
-    fun buscarCategorias(id: UUID): List<String> =
-        buscarPorId(id).categorias.map { it.name }
+    fun buscarCategorias(id: UUID): List<String> = buscarPorId(id).categorias.map { it.name }
 
     @Transactional
     fun atualizarCategorias(

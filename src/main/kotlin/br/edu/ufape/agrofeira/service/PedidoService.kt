@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 @Service
 class PedidoService(
@@ -56,8 +56,10 @@ class PedidoService(
             val produto = produtoService.buscarPorId(itemReq.produtoId)
 
             // Ordena pelo menor estoque reservado: quem vendeu menos vai primeiro (rotatividade)
-            val ofertas = ofertaEstoqueRepository.buscarPorFeiraEProduto(feira.id, produto.id)
-                .sortedBy { it.quantidadeReservada }
+            val ofertas =
+                ofertaEstoqueRepository
+                    .buscarPorFeiraEProduto(feira.id, produto.id)
+                    .sortedBy { it.quantidadeReservada }
 
             if (ofertas.isEmpty()) throw BusinessRuleException("Produto ${produto.nome} não disponível nesta feira")
 
@@ -141,12 +143,25 @@ class PedidoService(
         }
         val permitidas =
             when (atual) {
-                StatusPedido.PENDENTE -> setOf(StatusPedido.AGUARDANDO_SEPARACAO, StatusPedido.CANCELADO)
-                StatusPedido.AGUARDANDO_SEPARACAO -> setOf(StatusPedido.PRONTO_RETIRADA, StatusPedido.CANCELADO)
-                StatusPedido.PRONTO_RETIRADA ->
+                StatusPedido.PENDENTE -> {
+                    setOf(StatusPedido.AGUARDANDO_SEPARACAO, StatusPedido.CANCELADO)
+                }
+
+                StatusPedido.AGUARDANDO_SEPARACAO -> {
+                    setOf(StatusPedido.PRONTO_RETIRADA, StatusPedido.CANCELADO)
+                }
+
+                StatusPedido.PRONTO_RETIRADA -> {
                     setOf(StatusPedido.SAIU_ENTREGA, StatusPedido.ENTREGUE, StatusPedido.CANCELADO)
-                StatusPedido.SAIU_ENTREGA -> setOf(StatusPedido.ENTREGUE)
-                StatusPedido.ENTREGUE, StatusPedido.CANCELADO -> emptySet()
+                }
+
+                StatusPedido.SAIU_ENTREGA -> {
+                    setOf(StatusPedido.ENTREGUE)
+                }
+
+                StatusPedido.ENTREGUE, StatusPedido.CANCELADO -> {
+                    emptySet()
+                }
             }
         if (novo !in permitidas) {
             throw BusinessRuleException("Transição de status não permitida: $atual → $novo")

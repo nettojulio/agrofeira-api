@@ -49,6 +49,9 @@ class SecurityConfig(
                 it.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 it.requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/feiras/**").permitAll()
                 it.requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/zonas-entrega/**").permitAll()
+                it
+                    .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/itens", "/api/v1/itens/**")
+                    .authenticated()
                 it.anyRequest().authenticated()
             }.exceptionHandling { exceptions ->
                 exceptions

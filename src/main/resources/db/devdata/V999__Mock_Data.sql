@@ -1,20 +1,20 @@
 INSERT INTO usuarios (id, nome, email, telefone, senha_hash, descricao)
 VALUES ('aaaa1111-0000-0000-0000-000000000001', 'LMTS Admin', 'lmts@ufape.edu.br', null,
-        '$2a$10$MwVBHxu9EH4ScRxjK8nL.OG.9PmLiGhPrRt3Cb7gqcL7bONiK3Rr6', 'Administrador do Sistema'),
+        '$2a$10$' || 'MwVBHxu9EH4ScRxjK8nL.OG.9PmLiGhPrRt3Cb7gqcL7bONiK3Rr6', 'Administrador do Sistema'),
        ('aaaa1111-0000-0000-0000-000000000002', 'Jucelino (Gerenciador)', 'jucelino@agro.com', '87911111111',
-        '$2a$10$MwVBHxu9EH4ScRxjK8nL.OG.9PmLiGhPrRt3Cb7gqcL7bONiK3Rr6', 'Gerenciador da Feira'),
+        '$2a$10$' || 'MwVBHxu9EH4ScRxjK8nL.OG.9PmLiGhPrRt3Cb7gqcL7bONiK3Rr6', 'Gerenciador da Feira'),
 -- Comerciante APENAS com telefone (Sem E-mail)
        ('bbbb2222-0000-0000-0000-000000000001', 'João Agricultor', NULL, '87922222222',
-        '$2a$10$MwVBHxu9EH4ScRxjK8nL.OG.9PmLiGhPrRt3Cb7gqcL7bONiK3Rr6', 'Sítio Boa Esperança'),
+        '$2a$10$' || 'MwVBHxu9EH4ScRxjK8nL.OG.9PmLiGhPrRt3Cb7gqcL7bONiK3Rr6', 'Sítio Boa Esperança'),
 -- Comerciante APENAS com e-mail (Sem Telefone)
        ('bbbb2222-0000-0000-0000-000000000002', 'Maria da Horta', 'maria@horta.com', NULL,
-        '$2a$10$MwVBHxu9EH4ScRxjK8nL.OG.9PmLiGhPrRt3Cb7gqcL7bONiK3Rr6', 'Hortaliças Orgânicas'),
+        '$2a$10$' || 'MwVBHxu9EH4ScRxjK8nL.OG.9PmLiGhPrRt3Cb7gqcL7bONiK3Rr6', 'Hortaliças Orgânicas'),
 -- Consumidor com Tudo Preenchido
        ('cccc3333-0000-0000-0000-000000000001', 'Carlos Cliente', 'carlos@email.com', '87944444444',
-        '$2a$10$MwVBHxu9EH4ScRxjK8nL.OG.9PmLiGhPrRt3Cb7gqcL7bONiK3Rr6', NULL),
+        '$2a$10$' || 'MwVBHxu9EH4ScRxjK8nL.OG.9PmLiGhPrRt3Cb7gqcL7bONiK3Rr6', NULL),
 -- Consumidora SEM e-mail e SEM telefone (Cadastro Ultra-Rápido da V1)
        ('cccc3333-0000-0000-0000-000000000002', 'Dona Ana Consumidora', NULL, NULL,
-        '$2a$10$MwVBHxu9EH4ScRxjK8nL.OG.9PmLiGhPrRt3Cb7gqcL7bONiK3Rr6', NULL);
+        '$2a$10$' || 'MwVBHxu9EH4ScRxjK8nL.OG.9PmLiGhPrRt3Cb7gqcL7bONiK3Rr6', NULL);
 
 INSERT INTO usuario_perfil (usuario_id, perfil_id)
 VALUES ('aaaa1111-0000-0000-0000-000000000001', 1),

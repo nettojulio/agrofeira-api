@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotEmpty
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Positive
 import java.math.BigDecimal
-import java.util.*
+import java.util.UUID
 
 @Schema(description = "Dados para realização de pedido")
 data class PedidoRequest(

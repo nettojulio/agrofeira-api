@@ -11,21 +11,6 @@ jobs:
     name: Build & Test
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:18-alpine
-        env:
-          POSTGRES_DB: agrofeira_test
-          POSTGRES_USER: agro_user
-          POSTGRES_PASSWORD: agro_password
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
     steps:
       - name: Checkout do código
         uses: actions/checkout@v6
@@ -42,11 +27,6 @@ jobs:
 
       - name: Validar, Compilar e Testar (Unitários e Integração)
         run: ./mvnw clean verify
-        env:
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/agrofeira_test
-          SPRING_DATASOURCE_USERNAME: agro_user
-          SPRING_DATASOURCE_PASSWORD: agro_password
-          SPRING_JPA_HIBERNATE_DDL_AUTO: update
 
       - name: Upload de relatórios de erro (testes falharam)
         if: failure()

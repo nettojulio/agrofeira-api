@@ -3,7 +3,7 @@ package br.edu.ufape.agrofeira.dto.request
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
-import java.util.*
+import java.util.UUID
 
 @Schema(description = "Dados para cadastro ou atualização de endereço")
 data class EnderecoRequest(

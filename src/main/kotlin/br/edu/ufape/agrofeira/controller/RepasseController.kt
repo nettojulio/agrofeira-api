@@ -15,8 +15,13 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
-import java.util.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
+import java.util.UUID
 
 @RestController
 @RequestMapping("/api/v1/repasses")
@@ -31,7 +36,13 @@ class RepasseController(
         @PageableDefault(size = 10, page = 0) pageable: Pageable,
     ): ResponseEntity<ApiResponse<Page<RepasseDTO>>> {
         val repasses = service.listarTodos(pageable).map { it.toDTO() }
-        return ResponseEntity.ok(ApiResponse(success = true, message = "Repasses recuperados com sucesso", data = repasses))
+        return ResponseEntity.ok(
+            ApiResponse(
+                success = true,
+                message = "Repasses recuperados com sucesso",
+                data = repasses,
+            ),
+        )
     }
 
     @GetMapping("/comerciante/{comercianteId}")
@@ -40,7 +51,13 @@ class RepasseController(
         @PathVariable comercianteId: UUID,
     ): ResponseEntity<ApiResponse<List<RepasseDTO>>> {
         val repasses = service.listarPorComerciante(comercianteId).map { it.toDTO() }
-        return ResponseEntity.ok(ApiResponse(success = true, message = "Repasses do comerciante recuperados com sucesso", data = repasses))
+        return ResponseEntity.ok(
+            ApiResponse(
+                success = true,
+                message = "Repasses do comerciante recuperados com sucesso",
+                data = repasses,
+            ),
+        )
     }
 
     @GetMapping("/feira/{feiraId}")
@@ -49,7 +66,13 @@ class RepasseController(
         @PathVariable feiraId: UUID,
     ): ResponseEntity<ApiResponse<List<RepasseDTO>>> {
         val repasses = service.listarPorFeira(feiraId).map { it.toDTO() }
-        return ResponseEntity.ok(ApiResponse(success = true, message = "Repasses da feira recuperados com sucesso", data = repasses))
+        return ResponseEntity.ok(
+            ApiResponse(
+                success = true,
+                message = "Repasses da feira recuperados com sucesso",
+                data = repasses,
+            ),
+        )
     }
 
     @GetMapping("/feira/{feiraId}/totais")
@@ -58,7 +81,13 @@ class RepasseController(
         @PathVariable feiraId: UUID,
     ): ResponseEntity<ApiResponse<List<RepasseTotaisDTO>>> {
         val totais = service.listarTotaisPorFeira(feiraId)
-        return ResponseEntity.ok(ApiResponse(success = true, message = "Totais de repasse recuperados com sucesso", data = totais))
+        return ResponseEntity.ok(
+            ApiResponse(
+                success = true,
+                message = "Totais de repasse recuperados com sucesso",
+                data = totais,
+            ),
+        )
     }
 
     @PostMapping

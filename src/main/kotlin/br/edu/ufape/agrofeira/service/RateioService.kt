@@ -3,12 +3,16 @@ package br.edu.ufape.agrofeira.service
 import br.edu.ufape.agrofeira.domain.entity.Feira
 import br.edu.ufape.agrofeira.domain.entity.Pedido
 import br.edu.ufape.agrofeira.domain.entity.RateioResultado
-import br.edu.ufape.agrofeira.repository.*
+import br.edu.ufape.agrofeira.repository.FilaRateioRepository
+import br.edu.ufape.agrofeira.repository.ItemPedidoRepository
+import br.edu.ufape.agrofeira.repository.OfertaEstoqueRepository
+import br.edu.ufape.agrofeira.repository.PedidoRepository
+import br.edu.ufape.agrofeira.repository.RateioResultadoRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.util.*
+import java.util.UUID
 
 @Service
 class RateioService(

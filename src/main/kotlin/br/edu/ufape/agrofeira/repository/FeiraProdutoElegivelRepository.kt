@@ -7,5 +7,6 @@ import java.util.UUID
 
 interface FeiraProdutoElegivelRepository : JpaRepository<FeiraProdutoElegivel, FeiraProdutoId> {
     fun findByFeiraId(feiraId: UUID): List<FeiraProdutoElegivel>
+
     fun deleteByFeiraId(feiraId: UUID)
 }

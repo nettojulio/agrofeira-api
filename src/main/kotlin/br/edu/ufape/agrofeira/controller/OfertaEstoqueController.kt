@@ -12,8 +12,14 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
-import java.util.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
+import java.util.UUID
 
 @RestController
 @RequestMapping("/api/v1/estoque-bancas")
@@ -30,7 +36,13 @@ class OfertaEstoqueController(
         val oferta = service.cadastrar(request)
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(ApiResponse(success = true, message = "Oferta de estoque cadastrada com sucesso", data = oferta.toDTO()))
+            .body(
+                ApiResponse(
+                    success = true,
+                    message = "Oferta de estoque cadastrada com sucesso",
+                    data = oferta.toDTO(),
+                ),
+            )
     }
 
     @PutMapping("/{id}")
@@ -41,7 +53,13 @@ class OfertaEstoqueController(
         @RequestBody @Valid request: OfertaEstoqueUpdateRequest,
     ): ResponseEntity<ApiResponse<OfertaEstoqueDTO>> {
         val oferta = service.atualizar(id, request)
-        return ResponseEntity.ok(ApiResponse(success = true, message = "Oferta de estoque atualizada com sucesso", data = oferta.toDTO()))
+        return ResponseEntity.ok(
+            ApiResponse(
+                success = true,
+                message = "Oferta de estoque atualizada com sucesso",
+                data = oferta.toDTO(),
+            ),
+        )
     }
 
     @GetMapping("/{id}")
@@ -51,7 +69,13 @@ class OfertaEstoqueController(
         @PathVariable id: UUID,
     ): ResponseEntity<ApiResponse<OfertaEstoqueDTO>> {
         val oferta = service.buscarPorId(id)
-        return ResponseEntity.ok(ApiResponse(success = true, message = "Oferta de estoque recuperada com sucesso", data = oferta.toDTO()))
+        return ResponseEntity.ok(
+            ApiResponse(
+                success = true,
+                message = "Oferta de estoque recuperada com sucesso",
+                data = oferta.toDTO(),
+            ),
+        )
     }
 
     @GetMapping("/feira/{feiraId}")
@@ -61,7 +85,13 @@ class OfertaEstoqueController(
         @PathVariable feiraId: UUID,
     ): ResponseEntity<ApiResponse<List<OfertaEstoqueDTO>>> {
         val ofertas = service.listarPorFeira(feiraId).map { it.toDTO() }
-        return ResponseEntity.ok(ApiResponse(success = true, message = "Ofertas de estoque recuperadas com sucesso", data = ofertas))
+        return ResponseEntity.ok(
+            ApiResponse(
+                success = true,
+                message = "Ofertas de estoque recuperadas com sucesso",
+                data = ofertas,
+            ),
+        )
     }
 
     @GetMapping("/feira/{feiraId}/item/{itemId}")
@@ -72,6 +102,12 @@ class OfertaEstoqueController(
         @PathVariable itemId: UUID,
     ): ResponseEntity<ApiResponse<List<OfertaEstoqueDTO>>> {
         val ofertas = service.listarPorFeiraEItem(feiraId, itemId).map { it.toDTO() }
-        return ResponseEntity.ok(ApiResponse(success = true, message = "Ofertas de estoque recuperadas com sucesso", data = ofertas))
+        return ResponseEntity.ok(
+            ApiResponse(
+                success = true,
+                message = "Ofertas de estoque recuperadas com sucesso",
+                data = ofertas,
+            ),
+        )
     }
 }

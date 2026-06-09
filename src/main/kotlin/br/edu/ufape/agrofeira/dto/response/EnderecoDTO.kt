@@ -1,7 +1,7 @@
 package br.edu.ufape.agrofeira.dto.response
 
 import io.swagger.v3.oas.annotations.media.Schema
-import java.util.*
+import java.util.UUID
 
 @Schema(description = "Dados detalhados do endereço")
 data class EnderecoDTO(
