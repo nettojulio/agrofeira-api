@@ -1,26 +1,28 @@
 package br.edu.ufape.agrofeira.controller
 
+import br.edu.ufape.agrofeira.BaseIntegrationTest
 import br.edu.ufape.agrofeira.domain.entity.PasswordResetToken
 import br.edu.ufape.agrofeira.domain.entity.Perfil
 import br.edu.ufape.agrofeira.domain.entity.Usuario
-import br.edu.ufape.agrofeira.dto.request.*
+import br.edu.ufape.agrofeira.dto.request.ForgotPasswordRequest
+import br.edu.ufape.agrofeira.dto.request.LoginRequest
+import br.edu.ufape.agrofeira.dto.request.LogoutRequest
+import br.edu.ufape.agrofeira.dto.request.RefreshTokenRequest
+import br.edu.ufape.agrofeira.dto.request.RegisterRequest
+import br.edu.ufape.agrofeira.dto.request.ResetPasswordRequest
 import br.edu.ufape.agrofeira.repository.PasswordResetTokenRepository
 import br.edu.ufape.agrofeira.repository.PerfilRepository
 import br.edu.ufape.agrofeira.repository.RefreshTokenRepository
 import br.edu.ufape.agrofeira.repository.UsuarioRepository
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.mail.internet.MimeMessage
-import org.hamcrest.Matchers.hasKey
 import org.hamcrest.Matchers.not
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 import org.springframework.http.MediaType
@@ -28,25 +30,14 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.test.context.support.WithMockUser
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
-import org.testcontainers.containers.PostgreSQLContainer
-import org.testcontainers.junit.jupiter.Container
-import org.testcontainers.junit.jupiter.Testcontainers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.security.MessageDigest
 import java.time.Instant
-import java.util.*
 
-@SpringBootTest(
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-    properties = ["app.scheduling.enabled=false"],
-)
-@AutoConfigureMockMvc
-@Testcontainers
-@ActiveProfiles("test")
-class AuthControllerIntegrationTest {
+class AuthControllerIntegrationTest : BaseIntegrationTest() {
     @TestConfiguration
     class TestConfig {
         @Bean
@@ -57,17 +48,6 @@ class AuthControllerIntegrationTest {
             `when`(mailSender.createMimeMessage()).thenReturn(mimeMessage)
             return mailSender
         }
-    }
-
-    companion object {
-        @Container
-        @ServiceConnection
-        val postgres =
-            PostgreSQLContainer("postgres:18-alpine").apply {
-                withDatabaseName("testdb")
-                withUsername("test")
-                withPassword("test")
-            }
     }
 
     @Autowired

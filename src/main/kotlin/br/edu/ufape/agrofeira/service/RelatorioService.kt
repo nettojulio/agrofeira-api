@@ -1,7 +1,6 @@
 package br.edu.ufape.agrofeira.service
 
 import br.edu.ufape.agrofeira.domain.entity.Relatorio
-import br.edu.ufape.agrofeira.domain.enums.TipoRelatorio
 import br.edu.ufape.agrofeira.dto.request.RelatorioRequest
 import br.edu.ufape.agrofeira.exception.ResourceNotFoundException
 import br.edu.ufape.agrofeira.repository.RelatorioRepository
@@ -10,7 +9,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 @Service
 class RelatorioService(

@@ -1,48 +1,32 @@
 package br.edu.ufape.agrofeira.controller
 
+import br.edu.ufape.agrofeira.BaseIntegrationTest
 import br.edu.ufape.agrofeira.config.JwtService
-import br.edu.ufape.agrofeira.domain.entity.*
+import br.edu.ufape.agrofeira.domain.entity.Perfil
+import br.edu.ufape.agrofeira.domain.entity.Usuario
+import br.edu.ufape.agrofeira.domain.entity.ZonaEntrega
 import br.edu.ufape.agrofeira.dto.request.ZonaEntregaRequest
-import br.edu.ufape.agrofeira.repository.*
+import br.edu.ufape.agrofeira.repository.PerfilRepository
+import br.edu.ufape.agrofeira.repository.UsuarioRepository
+import br.edu.ufape.agrofeira.repository.ZonaEntregaRepository
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.http.MediaType
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
-import org.testcontainers.containers.PostgreSQLContainer
-import org.testcontainers.junit.jupiter.Container
-import org.testcontainers.junit.jupiter.Testcontainers
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.math.BigDecimal
-import java.util.*
+import java.util.UUID
 
-@SpringBootTest(
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-    properties = ["app.scheduling.enabled=false"],
-)
-@AutoConfigureMockMvc
-@Testcontainers
-@ActiveProfiles("test")
-class ZonaEntregaControllerIntegrationTest {
-    companion object {
-        @Container
-        @ServiceConnection
-        val postgres =
-            PostgreSQLContainer("postgres:18-alpine").apply {
-                withDatabaseName("testdb")
-                withUsername("test")
-                withPassword("test")
-            }
-    }
-
+class ZonaEntregaControllerIntegrationTest : BaseIntegrationTest() {
     @Autowired
     lateinit var mockMvc: MockMvc
     private val objectMapper = ObjectMapper().findAndRegisterModules()

@@ -2,6 +2,7 @@ package br.edu.ufape.agrofeira.service
 
 import br.edu.ufape.agrofeira.domain.entity.Repasse
 import br.edu.ufape.agrofeira.domain.enums.StatusPagamento
+import br.edu.ufape.agrofeira.dto.mapper.toDTO
 import br.edu.ufape.agrofeira.dto.request.RepasseRequest
 import br.edu.ufape.agrofeira.dto.response.FaturamentoMensalDTO
 import br.edu.ufape.agrofeira.dto.response.RepasseTotaisDTO
@@ -9,15 +10,13 @@ import br.edu.ufape.agrofeira.exception.BusinessRuleException
 import br.edu.ufape.agrofeira.exception.ResourceNotFoundException
 import br.edu.ufape.agrofeira.repository.RateioResultadoRepository
 import br.edu.ufape.agrofeira.repository.RepasseRepository
-import br.edu.ufape.agrofeira.dto.mapper.toDTO
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 @Service
 class RepasseService(
@@ -54,18 +53,30 @@ class RepasseService(
     }
 
     fun relatorioMensal(ano: Int): List<FaturamentoMensalDTO> {
-        val mesesLabels = listOf("Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
-                                 "Jul", "Ago", "Set", "Out", "Nov", "Dez")
-        return repository.findAll()
+        val mesesLabels =
+            listOf(
+                "Jan",
+                "Fev",
+                "Mar",
+                "Abr",
+                "Mai",
+                "Jun",
+                "Jul",
+                "Ago",
+                "Set",
+                "Out",
+                "Nov",
+                "Dez",
+            )
+        return repository
+            .findAll()
             .filter { r ->
                 val dataRef = r.repassadoEm ?: r.criadoEm
                 dataRef.year == ano
-            }
-            .groupBy { r ->
+            }.groupBy { r ->
                 val dataRef = r.repassadoEm ?: r.criadoEm
                 dataRef.monthValue
-            }
-            .map { (mes, lista) ->
+            }.map { (mes, lista) ->
                 FaturamentoMensalDTO(
                     ano = ano,
                     mes = mes,
@@ -74,12 +85,12 @@ class RepasseService(
                     totalLiquido = lista.sumOf { it.valorLiquido },
                     quantidadeRepasses = lista.size,
                 )
-            }
-            .sortedBy { it.mes }
+            }.sortedBy { it.mes }
     }
 
     fun relatorioGeralPorComerciante(): List<RepasseTotaisDTO> =
-        repository.findAll()
+        repository
+            .findAll()
             .groupBy { it.comerciante.id }
             .map { (_, lista) ->
                 RepasseTotaisDTO(
@@ -88,8 +99,7 @@ class RepasseService(
                     totalLiquido = lista.sumOf { it.valorLiquido },
                     quantidadeRepasses = lista.size,
                 )
-            }
-            .sortedByDescending { it.totalBruto }
+            }.sortedByDescending { it.totalBruto }
 
     @Transactional
     fun registrar(request: RepasseRequest): Repasse {
@@ -98,7 +108,8 @@ class RepasseService(
                 .findById(request.rateioResultadoId)
                 .orElseThrow { ResourceNotFoundException("RateioResultado", request.rateioResultadoId.toString()) }
 
-        if (repository.findByComercianteId(rateioResultado.comerciante.id)
+        if (repository
+                .findByComercianteId(rateioResultado.comerciante.id)
                 .any { it.rateioResultado.id == rateioResultado.id }
         ) {
             throw BusinessRuleException(

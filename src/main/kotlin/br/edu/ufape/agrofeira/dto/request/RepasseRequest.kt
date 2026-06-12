@@ -2,7 +2,7 @@ package br.edu.ufape.agrofeira.dto.request
 
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotNull
-import java.util.*
+import java.util.UUID
 
 @Schema(description = "Dados para registro de repasse")
 data class RepasseRequest(

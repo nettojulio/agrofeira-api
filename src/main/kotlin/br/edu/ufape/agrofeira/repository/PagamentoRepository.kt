@@ -4,7 +4,7 @@ import br.edu.ufape.agrofeira.domain.entity.Pagamento
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
-import java.util.*
+import java.util.UUID
 
 interface PagamentoRepository : JpaRepository<Pagamento, UUID> {
     @Query("SELECT p FROM Pagamento p WHERE p.pedido.id = :pedidoId")

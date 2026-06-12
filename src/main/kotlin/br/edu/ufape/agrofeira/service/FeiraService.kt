@@ -25,9 +25,8 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.math.BigDecimal
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 @Service
 class FeiraService(
@@ -55,17 +54,19 @@ class FeiraService(
 
         if (request.comercianteIds.isNotEmpty()) {
             val comerciantes = usuarioRepository.findAllById(request.comercianteIds)
-            val elegiveis = comerciantes.map {
-                FeiraComercianteElegivel(id = FeiraComercianteId(feira.id, it.id), feira = feira, comerciante = it)
-            }
+            val elegiveis =
+                comerciantes.map {
+                    FeiraComercianteElegivel(id = FeiraComercianteId(feira.id, it.id), feira = feira, comerciante = it)
+                }
             feiraComercianteElegivelRepository.saveAll(elegiveis)
         }
 
         if (request.produtoIds.isNotEmpty()) {
             val produtos = produtoRepository.findAllById(request.produtoIds)
-            val elegiveis = produtos.map {
-                FeiraProdutoElegivel(id = FeiraProdutoId(feira.id, it.id), feira = feira, produto = it)
-            }
+            val elegiveis =
+                produtos.map {
+                    FeiraProdutoElegivel(id = FeiraProdutoId(feira.id, it.id), feira = feira, produto = it)
+                }
             feiraProdutoElegivelRepository.saveAll(elegiveis)
         }
 

@@ -1,7 +1,30 @@
 package br.edu.ufape.agrofeira.dto.mapper
 
-import br.edu.ufape.agrofeira.domain.entity.*
-import br.edu.ufape.agrofeira.dto.response.*
+import br.edu.ufape.agrofeira.domain.entity.Endereco
+import br.edu.ufape.agrofeira.domain.entity.Feira
+import br.edu.ufape.agrofeira.domain.entity.ItemPedido
+import br.edu.ufape.agrofeira.domain.entity.OfertaEstoque
+import br.edu.ufape.agrofeira.domain.entity.Pagamento
+import br.edu.ufape.agrofeira.domain.entity.Pedido
+import br.edu.ufape.agrofeira.domain.entity.Produto
+import br.edu.ufape.agrofeira.domain.entity.RateioResultado
+import br.edu.ufape.agrofeira.domain.entity.Relatorio
+import br.edu.ufape.agrofeira.domain.entity.Repasse
+import br.edu.ufape.agrofeira.domain.entity.Usuario
+import br.edu.ufape.agrofeira.domain.entity.ZonaEntrega
+import br.edu.ufape.agrofeira.dto.response.EnderecoDTO
+import br.edu.ufape.agrofeira.dto.response.FeiraDTO
+import br.edu.ufape.agrofeira.dto.response.ItemPedidoDTO
+import br.edu.ufape.agrofeira.dto.response.OfertaEstoqueDTO
+import br.edu.ufape.agrofeira.dto.response.PagamentoDTO
+import br.edu.ufape.agrofeira.dto.response.PedidoDTO
+import br.edu.ufape.agrofeira.dto.response.ProdutoDTO
+import br.edu.ufape.agrofeira.dto.response.RateioResultadoDTO
+import br.edu.ufape.agrofeira.dto.response.RelatorioDTO
+import br.edu.ufape.agrofeira.dto.response.RepasseDTO
+import br.edu.ufape.agrofeira.dto.response.UsuarioDTO
+import br.edu.ufape.agrofeira.dto.response.UsuarioDetalhadoDTO
+import br.edu.ufape.agrofeira.dto.response.ZonaEntregaDTO
 
 fun Usuario.toDTO() =
     UsuarioDTO(

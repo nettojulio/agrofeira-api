@@ -5,24 +5,32 @@ import br.edu.ufape.agrofeira.domain.entity.PasswordResetToken
 import br.edu.ufape.agrofeira.domain.entity.Perfil
 import br.edu.ufape.agrofeira.domain.entity.RefreshToken
 import br.edu.ufape.agrofeira.domain.entity.Usuario
-import br.edu.ufape.agrofeira.dto.mapper.toDTO
-import br.edu.ufape.agrofeira.dto.request.*
-import br.edu.ufape.agrofeira.dto.response.UsuarioDTO
+import br.edu.ufape.agrofeira.dto.request.ForgotPasswordRequest
+import br.edu.ufape.agrofeira.dto.request.LoginRequest
+import br.edu.ufape.agrofeira.dto.request.LogoutRequest
+import br.edu.ufape.agrofeira.dto.request.RefreshTokenRequest
+import br.edu.ufape.agrofeira.dto.request.RegisterRequest
+import br.edu.ufape.agrofeira.dto.request.ResetPasswordRequest
 import br.edu.ufape.agrofeira.exception.InvalidTokenException
 import br.edu.ufape.agrofeira.exception.UnauthorizedActionException
 import br.edu.ufape.agrofeira.repository.PasswordResetTokenRepository
 import br.edu.ufape.agrofeira.repository.PerfilRepository
 import br.edu.ufape.agrofeira.repository.RefreshTokenRepository
 import br.edu.ufape.agrofeira.repository.UsuarioRepository
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
-import org.mockito.Mockito
-import org.mockito.Mockito.*
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -33,7 +41,8 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.password.PasswordEncoder
 import java.security.MessageDigest
 import java.time.Instant
-import java.util.*
+import java.util.Optional
+import java.util.UUID
 
 @ExtendWith(MockitoExtension::class)
 class AuthServiceTest {
@@ -96,6 +105,11 @@ class AuthServiceTest {
                 3600000L,
             )
 
+        SecurityContextHolder.clearContext()
+    }
+
+    @AfterEach
+    fun tearDown() {
         SecurityContextHolder.clearContext()
     }
 

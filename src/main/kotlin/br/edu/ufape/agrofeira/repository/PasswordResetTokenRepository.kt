@@ -8,7 +8,8 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
-import java.util.*
+import java.util.Optional
+import java.util.UUID
 
 @Repository
 interface PasswordResetTokenRepository : JpaRepository<PasswordResetToken, UUID> {

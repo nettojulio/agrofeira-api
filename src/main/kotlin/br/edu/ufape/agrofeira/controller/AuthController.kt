@@ -1,6 +1,11 @@
 package br.edu.ufape.agrofeira.controller
 
-import br.edu.ufape.agrofeira.dto.request.*
+import br.edu.ufape.agrofeira.dto.request.ForgotPasswordRequest
+import br.edu.ufape.agrofeira.dto.request.LoginRequest
+import br.edu.ufape.agrofeira.dto.request.LogoutRequest
+import br.edu.ufape.agrofeira.dto.request.RefreshTokenRequest
+import br.edu.ufape.agrofeira.dto.request.RegisterRequest
+import br.edu.ufape.agrofeira.dto.request.ResetPasswordRequest
 import br.edu.ufape.agrofeira.dto.response.ApiResponse
 import br.edu.ufape.agrofeira.dto.response.LoginResponse
 import br.edu.ufape.agrofeira.dto.response.UsuarioDTO

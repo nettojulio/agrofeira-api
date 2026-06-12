@@ -14,9 +14,9 @@ data class ViaCepResponse(
 )
 
 @Service
-class ViaCepService {
-    private val restTemplate = RestTemplate()
-
+class ViaCepService(
+    private val restTemplate: RestTemplate,
+) {
     fun consultarCep(cep: String): ViaCepResponse? {
         val url = "https://viacep.com.br/ws/$cep/json"
         return try {
